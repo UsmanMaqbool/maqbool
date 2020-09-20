@@ -1,4 +1,4 @@
-function [res, res_b] = leo_vl_simplenn(net, x, bboxes, num_box, dzdy, res, varargin)
+function [res, res_b] = m_vl_simplenn(net, x, bboxes, num_box, dzdy, res, varargin)
 %VL_SIMPLENN  Evaluate a SimpleNN network.
 %   RES = VL_SIMPLENN(NET, X) evaluates the convnet NET on data X.
 %   RES = VL_SIMPLENN(NET, X, DZDY) evaluates the convnent NET and its
@@ -326,7 +326,7 @@ for i=1:n
     %h.Colormap = parula
     for ii=1:num_box
     res_b1 = res_b{1,ii}(i).x;
-    res_b1 = net_box(i,res(i).x,res_b1,bboxes(ii,:));
+    res_b1 = m_net_box(i,res(i).x,res_b1,bboxes(ii,:));
     res_b{1,ii}(i).x = res_b1(i).x;
     end
   end

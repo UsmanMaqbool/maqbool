@@ -1,24 +1,23 @@
-function plen_opts= pslen_settings(paths)
+function m_opts= m_settings(paths)
     
  
     iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
-    pslen_mode = 'training' ; %'training' , 'test'
-    proj = 'pslen'; %'vt-rgb'
+    m_mode = 'training' ; %'training' , 'test'
+    proj = 'm'; %'vt-rgb'
     f_dimension = 512;% '512' or '4096'
     pre_net = 'vd16';% 'vd16', 'caffe'
-    net_dataset = 'tokyoTM'; %tokyoTM', 'pitts30k' 
+    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'tokyo247';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
-    pslen_on = 'paris'; % PSLEN model using Paris dataset.
-    
-    pslen_directory = '/home/leo/mega/pslen-1/';
+    job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
+    m_on = 'paris'; % m model using Paris dataset.
+    m_directory = '/home/leo/mega/maqbool-data/';
     %%
     
     
     
     if strcmp(job_net,'vd16_pitts30k')
         % PITTSBURGH DATASET
-        netID= 'vd16_pitts30k_conv5_3_vlad_preL2_intra_white';
+       netID= 'vd16_pitts30k_conv5_3_vlad_preL2_intra_white';
 
     elseif strcmp(job_net,'vd16_tokyoTM')
         % TOKYO DATASET
@@ -57,50 +56,21 @@ function plen_opts= pslen_settings(paths)
     end
 
     
-    save_path = strcat(pslen_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension),'_',proj);
-    save_pslen_data = strcat(pslen_directory,'models/',job_net,'_to_',pslen_on,int2str(f_dimension),'_data.mat');
-    save_pslen_data_mdl = strcat(pslen_directory,'models/', job_net,'_to_',pslen_on,int2str(f_dimension),'_mdls.mat');
+    save_path = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension),'_',proj);
+    save_m_data = strcat(m_directory,'models/',job_net,'_to_',m_on,'_',int2str(f_dimension),'_data.mat');
+    save_m_data_mdl = strcat(m_directory,'models/', job_net,'_to_',m_on,'_',int2str(f_dimension),'_mdls.mat');
 
-    save_path_all = strcat(pslen_directory,job_net,'_to_',job_datasets,'_box_50_plus','.mat');
+    save_path_all = strcat(m_directory,job_net,'_to_',job_datasets,'_box_50_plus','.mat');
         
     % Save result for tikz latex
-    maqbool_d_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_D_',int2str(f_dimension),'.dat');
-    maqbool_r_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_R_',int2str(f_dimension),'.dat');
+    m_d_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_D_',int2str(f_dimension),'.dat');
+    m_r_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_R_',int2str(f_dimension),'.dat');
     netvlad_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_netvlad_',int2str(f_dimension),'.dat');
     save_results = strcat('results/',job_net,'_to_',job_datasets,'_both_results_',int2str(f_dimension),'.mat');
     
-    %% TOKYO DATASET
-    %netID= 'vd16_tokyoTM_conv5_3_vlad_preL2_intra_white'; % netID= 'caffe_tokyoTM_conv5_vlad_preL2_intra_white';
-
-    %dbTest= dbTokyo247();fra
-    %datasets_path = 'datasets/Test_247_Tokyo_GSV'; %% PC
-
-    %save_path = '/home/leo/mega/vt-6';
-    %save_path = '/home/leo/mega/vt-7-pitts2tokyo';
-
-    %datasets_path = '/home/leo/docker_ws/datasets/Test_247_Tokyo_GSV'; %% LAPTOP
-    %save_path = '/home/leo/MEGA/vt-6';
-
-    %datasets_path = '/home/leo/docker_ws/datasets/Test_247_Tokyo_GSV'; %% LAPTOP
-    %save_path = '/home/leo/MEGA/Tokyo24-boxed-vt-6';
-    %save_path_all = 'pslen-results/pslen-tokyo2tokto-vt-6.mat';
-
-
-
-    %% Pitts 2 TOKYO DATASET
-    %netID= 'vd16_pitts30k_conv5_3_vlad_preL2_intra_white';
-
-    %dbTest= dbTokyo247();
-
-    %datasets_path = '/home/leo/docker_ws/datasets/Test_247_Tokyo_GSV'; %% LAPTOP
-    %datasets_path = 'datasets/Test_247_Tokyo_GSV'; %% LAPTOP
-
-    %save_path = '/home/leo/MEGA/vt-7-pitts2tokyo';
-
-
     %%
-    plen_opts = struct(...
-                'pslen_directory',          pslen_directory, ...
+    m_opts = struct(...
+                'm_directory',              m_directory, ...
                 'netID',                    netID, ...
                 'proj',                     proj, ...
                 'job_net',                  job_net, ...
@@ -108,10 +78,10 @@ function plen_opts= pslen_settings(paths)
                 'save_path',                save_path, ...
                 'save_results',             save_results, ...
                 'save_path_all',            save_path_all, ...
-                'save_pslen_data',          save_pslen_data, ...
-                'save_pslen_data_mdl',      save_pslen_data_mdl, ...
-                'maqbool_d_results_fname',  maqbool_d_results_fname, ...
-                'maqbool_r_results_fname',  maqbool_r_results_fname, ...
+                'save_m_data',              save_m_data, ...
+                'save_m_data_mdl',          save_m_data_mdl, ...
+                'm_d_results_fname',        m_d_results_fname, ...
+                'm_r_results_fname',        m_r_results_fname, ...
                 'netvlad_results_fname',    netvlad_results_fname, ...
                 'vt_type',                  3, ...
                 'iTestSample_Start',        iTestSample_Start, ...
@@ -120,8 +90,8 @@ function plen_opts= pslen_settings(paths)
                 'query_folder',             query_folder, ...
                 'dbTest',                   dbTest, ...
                 'cropToDim',                f_dimension, ...
-                'pslen_on',                 pslen_on, ....    
-                'createPslenModel',         0 ...
+                'm_on',                     m_on, ....    
+                'create_Model',             0 ...
                 );
 
 

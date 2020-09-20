@@ -1,4 +1,4 @@
-function [recall, rankloss, allRecalls, allrecalls_pslen, opts]= pslen_testFromFn(db, dbFeatFn, qFeatFn, plen_opts, opts, varargin)
+function [recall, rankloss, allRecalls, allrecalls_m, opts]= m_testFromFn(db, dbFeatFn, qFeatFn, plen_opts, opts, varargin)
     
     if nargin<5 || isempty(opts)
         % a bit hacky but fine..
@@ -35,5 +35,5 @@ function [recall, rankloss, allRecalls, allrecalls_pslen, opts]= pslen_testFromF
     else
         rankloss= [];
     end
-    [recall, allRecalls, allrecalls_pslen]= pslen_testCore(db, qFeat, dbFeat,plen_opts, 'nTestSample', opts.nTestSample, 'recallNs', opts.recallNs);
+    [recall, allRecalls, allrecalls_m]= m_testCore(db, qFeat, dbFeat,plen_opts, 'nTestSample', opts.nTestSample, 'recallNs', opts.recallNs);
 end

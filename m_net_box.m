@@ -1,4 +1,4 @@
-function res_im = net_box(i,feat_im,res_im,bboxes)
+function res_im = m_net_box(i,feat_im,res_im,bboxes)
 
 wyd1 = bboxes(1);
 wyd2 = bboxes(1)+bboxes(3);

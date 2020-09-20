@@ -1,8 +1,8 @@
-function pslen_model(pslen_config) 
+function m_model(m_config) 
     
-    fprintf( 'Creating PSLEN Model \n')
+    fprintf( 'Creating m Model \n')
 
-    load(pslen_config.save_pslen_data,'data');
+    load(m_config.save_m_data,'data');
     HH = [];
     for i = 1:size(data,2)
         XX = data(i).X';
@@ -20,7 +20,9 @@ function pslen_model(pslen_config)
     mdls{2} = TreeBagger(50,Data,'HH112','Method','regression',...
     'OOBPrediction','On');
 
+    %mdls{1} = fitrensemble(Data,'HH112');
+  
     
-    save(pslen_config.save_pslen_data_mdl,'mdls');
-    fprintf( 'PSLEN Model is created. \n')
+    save(m_config.save_m_data_mdl,'mdls');
+    fprintf( 'm Model is created. \n')
 end

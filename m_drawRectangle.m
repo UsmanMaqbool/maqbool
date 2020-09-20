@@ -1,4 +1,4 @@
-function imageReturn = drawRectangle(image, Xmin, Ymin, width, height)
+function imageReturn = m_drawRectangle(image, Xmin, Ymin, width, height)
     imageReturn = image;
     intensity = 255;
     X1 = Xmin+1;

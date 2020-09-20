@@ -1,4 +1,4 @@
-function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPos, ns, printN, nSample,db,pslen_config)
+function [res, recalls, recalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, printN, nSample,db,m_config)
     if nargin<6, nSample= inf; end
     
     rngState= rng;
@@ -14,16 +14,16 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
     nTop= max(ns);
     
     recalls= zeros(length(toTest), length(ns));
-    recalls_pslen= zeros(length(toTest), length(ns),2);
+    recalls_m= zeros(length(toTest), length(ns),2);
     printRecalls= zeros(length(toTest),1);
 
     %% Load variables
     
-    iTestSample_Start=pslen_config.iTestSample_Start; 
-    startfrom =pslen_config.startfrom; 
-    show_output = pslen_config.show_output;  %test the boxes
-    dataset_path = pslen_config.datasets_path; 
-    save_path = pslen_config.save_path; 
+    iTestSample_Start=m_config.iTestSample_Start; 
+    startfrom =m_config.startfrom; 
+    show_output = m_config.show_output;  %test the boxes
+    dataset_path = m_config.datasets_path; 
+    save_path = m_config.save_path; 
     
     
     evalProg= tic;
@@ -31,7 +31,7 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
     
     %% NetVLAD Model
 
-    netID= pslen_config.netID;
+    netID= m_config.netID;
     paths = localPaths();
     load( sprintf('%s%s.mat', paths.ourCNNs, netID), 'net' );
     net= relja_simplenn_tidy(net); % potentially upgrate the network to the latest version of NetVLAD / MatConvNet
@@ -47,9 +47,9 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
     total_top = 100; %100;0
     inegatif_i = [];
 
-    %% Load PSLEN Model
-     if ~(pslen_config.createPslenModel)
-        g_mdl =  load(pslen_config.save_pslen_data_mdl);
+    %% Load m Model
+     if ~(m_config.create_Model)
+        g_mdl =  load(m_config.save_m_data_mdl);
      end
     %% Start
     for iTestSample= iTestSample_Start:length(toTest)
@@ -70,8 +70,8 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
        % ds = ds ./ max(ds(:)); 
         
         % if oxford or otherplace datasets, we can get the recall like this
-        if(pslen_config.createPslenModel)
-            save_path = strcat(pslen_config.pslen_directory,pslen_config.job_net,'_to_',pslen_config.pslen_on,'_',int2str(pslen_config.cropToDim),'_',pslen_config.proj);
+        if(m_config.create_Model)
+            save_path = strcat(m_config.m_directory,m_config.job_net,'_to_',m_config.m_on,'_',int2str(m_config.cropToDim),'_',m_config.proj);
             isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
             ids= ids(~isIgnore);
             % making 100 total
@@ -97,7 +97,7 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
         
         %% Leo START
                 
-        qimg_path = strcat(dataset_path,'/',pslen_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
+        qimg_path = strcat(dataset_path,'/',m_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
         q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
         q_feat = strrep(q_img,'.jpg','.mat');
 
@@ -107,7 +107,7 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
              x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
         else
 
-            q_feat = leo_estimate_box_features(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
+            q_feat = m_estimate_box_features(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
             x_q_feat = load(q_feat);
 
         end
@@ -257,33 +257,33 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
             prob_ds_pre_sum = exp_ds_pre(i,1)/exp_ds_pre_sum;
             prob_ds_pre_sum = exp(-1*min_ds_all)*prob_ds_pre_sum;
 
-            Pslen_mat = prob_ds_pre_sum*ds_all_s_less_s1_sub;
+            m_mat = prob_ds_pre_sum*ds_all_s_less_s1_sub;
             
          
 
-            crf_h = x_q_feat_ds_all(1,1:10);%double(pslen_ds_all(1,:));
-            crf_X = Pslen_mat;%double(pslen_ds_all(2:11,:));
+            crf_h = x_q_feat_ds_all(1,1:10);%double(m_ds_all(1,:));
+            crf_X = m_mat;%double(m_ds_all(2:11,:));
             crf_pre = ds_pre(i,1);
          
-             if ~(pslen_config.createPslenModel)
+             if ~(m_config.create_Model)
                  crf_y = int8(logical(gt_top_ids(i,1)))+1;
                  XX = crf_X';
                  XX = reshape(XX,1,[]);
-                 pslen_pridict = [crf_pre crf_h XX];
+                 m_pridict = [crf_pre crf_h XX];
 
 
 
                 %store ds_pre
-                ds_new_top(i,1) = ds_pre(i,1);
+                ds_new_top(i,1) = D_diff;
                 
-                D_diff_predict = predict(g_mdl.mdls{1},pslen_pridict);
-                ds_new_top(i,2) = abs(D_diff/D_diff_predict);
-                D_diff_predict = predict(g_mdl.mdls{6},pslen_pridict);
-                ds_new_top(i,3) = abs(D_diff/D_diff_predict);
+                D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
+                ds_new_top(i,2) = D_diff+5*(exp(-1.*D_diff_predict));
+                D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
+                ds_new_top(i,3) = D_diff+5*(exp(-1.*D_diff_predict));
                 
 
                 
-                Pslen_table = [];
+                m_table = [];
 
                 ds_all = [];
              else
@@ -295,7 +295,7 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
         end
    
         
-        if ~(pslen_config.createPslenModel)
+        if ~(m_config.create_Model)
             
            for j = 1:size(ds_new_top,2)
     
@@ -306,50 +306,7 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
                     ids_new(i,1) = ids(c_i(i,1));
                    % inegatifss(i,1) = inegatif_i(c_i(i,1));
                 end
-            %     if show_output == 3
-            % 
-            %             subplot(2,6,1); imshow(imread(char(qimg_path))); %q_img
-            %             db_imgo1 = strcat(dataset_path,'/images/', db.dbImageFns{ids(1,1),1});  
-            %             db_imgo2 = strcat(dataset_path,'/images/', db.dbImageFns{ids(2,1),1});  
-            %             db_imgo3 = strcat(dataset_path,'/images/', db.dbImageFns{ids(3,1),1});  
-            %             db_imgo4 = strcat(dataset_path,'/images/', db.dbImageFns{ids(4,1),1});  
-            %             db_imgo5 = strcat(dataset_path,'/images/', db.dbImageFns{ids(5,1),1});  
-            %             db_img1 = strcat(dataset_path,'/images/', db.dbImageFns{idss(1,1),1});  
-            %             db_img2 = strcat(dataset_path,'/images/', db.dbImageFns{idss(2,1),1});  
-            %             db_img3 = strcat(dataset_path,'/images/', db.dbImageFns{idss(3,1),1});
-            %             db_img4 = strcat(dataset_path,'/images/', db.dbImageFns{idss(4,1),1});
-            %             db_img5 = strcat(dataset_path,'/images/', db.dbImageFns{idss(5,1),1});
-            % 
-            %             subplot(2,6,2); imshow(imread(char(db_imgo1))); %
-            %             aa = strcat(string(ds_pre(1,1)));title(aa)
-            % 
-            %             subplot(2,6,3); imshow(imread(char(db_imgo2))); %
-            %             aa = strcat(string(ds_pre(2,1)));title(aa)
-            % 
-            %             subplot(2,6,4); imshow(imread(char(db_imgo3))); %
-            %             aa = strcat(string(ds_pre(3,1)));title(aa)
-            % 
-            %             subplot(2,6,5); imshow(imread(char(db_imgo4))); %
-            %             aa = strcat(string(ds_pre(4,1)));title(aa)
-            % 
-            %             subplot(2,6,6); imshow(imread(char(db_imgo5))); %
-            %             aa = strcat(string(ds_pre(5,1)));title(aa)
-            % 
-            % 
-            %             subplot(2,6,8); imshow(imread(char(db_img1))); %
-            %             aa = strcat(string(ds_new_top(1,1)), '->', string(prob_q_db(1,1)));title(aa)
-            %             subplot(2,6,9); imshow(imread(char(db_img2))); %
-            %             aa = strcat(string(ds_new_top(2,1)), '->', string(prob_q_db(1,1)));title(aa)
-            %             subplot(2,6,10); imshow(imread(char(db_img3))); %
-            %             aa = strcat(string(ds_new_top(3,1)), '->', string(prob_q_db(1,1)));title(aa)
-            %             subplot(2,6,11); imshow(imread(char(db_img4))); %
-            %             aa = strcat(string(ds_new_top(4,1)), '->', string(prob_q_db(1,1)));title(aa)
-            %             subplot(2,6,12); imshow(imread(char(db_img5))); %
-            %             aa = strcat(string(ds_new_top(5,1)), '->', string(prob_q_db(1,1)));title(aa)
-            % 
-            %             %fprintf( '==>> %f %f %f %f %f \n',c_i(1,1), c_i(2,1),c_i(3,1), c_i(4,1) ,c_i(5,1));
-            % 
-            %      end
+            
 
                numReturned= length(ids);
                assert(numReturned<=nTop); % if your searcher returns fewer, it's your fault
@@ -358,7 +315,7 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
                if j == 1
                     recalls(iTestSample, :)= thisRecall( min(ns, numReturned) );
                else
-                    recalls_pslen(iTestSample,:, j-1)= thisRecall( min(ns, numReturned) );
+                    recalls_m(iTestSample,:, j-1)= thisRecall( min(ns, numReturned) );
                end
 
               printRecalls(iTestSample)= thisRecall(printN);
@@ -369,8 +326,8 @@ function [res, recalls, recalls_pslen]= pslen_recallAtN(searcher, nQueries, isPo
     
     t= toc(evalProg);
 
-    if (pslen_config.createPslenModel)
-        save(pslen_config.save_pslen_data,'data');
+    if (m_config.create_Model)
+        save(m_config.save_m_data,'data');
         res = [];
         fprintf( 'GT data is saved. \n')
     else

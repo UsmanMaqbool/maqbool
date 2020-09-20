@@ -21,7 +21,7 @@
 %
 %  `useGPU': Use the GPU or not
 
-function feats= leo_computeRepresentation(net, im, bbox,num_box, varargin)
+function feats= m_computeRepresentation(net, im, bbox,num_box, varargin)
     
     if ~isa(im, 'single')
         if ~isa(im, 'uint8')
@@ -58,7 +58,7 @@ function feats= leo_computeRepresentation(net, im, bbox,num_box, varargin)
     end
     
     % ---------- extract features
-    [res, res_b1]= leo_vl_simplenn(net, im, bbox,num_box,[], [], simpleNnOpts{:});
+    [res, res_b1]= m_vl_simplenn(net, im, bbox,num_box,[], [], simpleNnOpts{:});
     %res is the original full image feature, and res_b1 is the boxes
     clear im;
     feats = zeros(4096,num_box+1);

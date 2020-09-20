@@ -1,4 +1,4 @@
-function mat_boxes = leo_slen_increase_boxes(bbx,hyt,wyd)
+function mat_boxes = m_increase_boxes(bbx,hyt,wyd)
     bboxes=[];
     gt=[111	98	25	101];
 
