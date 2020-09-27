@@ -19,8 +19,8 @@ if ~exist(m_config.save_m_data_mdl, 'file')
     m_config.datasets_path = paths.dsetRootParis; %% PC
     m_config.query_folder = 'images';    
     
-    qFeatFn = sprintf('%s%s_%s_q.bin', paths.outPrefix, netID, dbTest.name);   % just to create the files in the out folder
-    dbFeatFn = sprintf('%s%s_%s_db.bin', paths.outPrefix, netID, dbTest.name);  % just to create the files in the out folder
+    qFeatFn = sprintf('%s%s_%s_%s_q.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));   % just to create the files in the out folder
+    dbFeatFn = sprintf('%s%s_%s_%s_db.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));  % just to create the files in the out folder
 
     % Create models if not available
     if ~exist(qFeatFn, 'file')
@@ -39,11 +39,10 @@ if ~exist(m_config.save_m_data_mdl, 'file')
 end
 
 %% Whole Process
-
+m_config = m_settings(paths);
 dbTest = m_config.dbTest;
-
-qFeatFn = sprintf('%s%s_%s_q.bin', paths.outPrefix, netID, dbTest.name);   % just to create the files in the out folder
-dbFeatFn = sprintf('%s%s_%s_db.bin', paths.outPrefix, netID, dbTest.name);  % just to create the files in the out folder
+qFeatFn = sprintf('%s%s_%s_%s_q.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));   % just to create the files in the out folder
+dbFeatFn = sprintf('%s%s_%s_%s_db.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));  % just to create the files in the out folder
 
 
 % Create models if not available

@@ -48,10 +48,6 @@ function paths= localPaths()
     paths.initData= '/home/leo/docker_ws/netvlad/netvlad-pre-data/initdata/';
     
     % --- output directory
-
-    %% HK PC
-    %% paths.outPrefix= '/mnt/0287D1936157598A/docker_ws/datasets/netvlad-original-output/';
-    %% LAPTOP
     paths.outPrefix= '/home/leo/docker_ws/datasets/netvlad-original-output/';
 
 end

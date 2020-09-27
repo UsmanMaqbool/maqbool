@@ -13,10 +13,10 @@ function m_model(m_config)
     hypopts = struct('ShowPlots',false,'Verbose',0,'UseParallel',false);
 
     % Decision tree
-    %mdls{1} = fitctree(Data,'HH112', ...
-     %   'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
+    mdls{1} = fitctree(Data,'HH112', ...
+       'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
   
-    mdls{1} = fitctree(Data,'HH112', 'OptimizeHyperparameters','auto');
+   % mdls{1} = fitctree(Data,'HH112', 'OptimizeHyperparameters','auto');
     
     
     

@@ -283,7 +283,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
               D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
               ds_new_top(i,3) =  abs(D_diff+2*exp(-1.*D_diff_predict)); 
 
-              D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
+              D_diff_predict = predict(g_mdl.mdls{3},m_pridict);
               ds_new_top(i,4) =  D_diff+exp(-1.*D_diff_predict); % work best on
 
 
