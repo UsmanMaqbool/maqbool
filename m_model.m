@@ -13,15 +13,39 @@ function m_model(m_config)
     hypopts = struct('ShowPlots',false,'Verbose',0,'UseParallel',false);
 
     % Decision tree
-    mdls{1} = fitctree(Data,'HH112', ...
-        'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
+    %mdls{1} = fitctree(Data,'HH112', ...
+     %   'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
+  
+    mdls{1} = fitctree(Data,'HH112', 'OptimizeHyperparameters','auto');
     
-    % Random fitrensemble
-    mdls{2} = TreeBagger(50,Data,'HH112','Method','regression',...
+    
+    
+    mdls{2} = fitrensemble(Data,'HH112');
+    
+   
+%   mdls{1} = fitcnb(Data,'HH112', ...
+ %   'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
+
+    %mdls{1} = fitctree(Data,'HH112', 'OptimizeHyperparameters','auto');
+   % mdls{1} = fitctree(Data,'HH112', ...
+    %    'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
+
+    
+
+  %  mdls{2} = fitrensemble(Data,'HH112');
+
+    % Naive Bayes
+
+    % mdls{3} = fitcnb(Data,'HH112', ...
+    %     'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
+
+    
+    
+    
+  % Random fitrensemble (Works better with 512 Dimension)
+    mdls{3} = TreeBagger(50,Data,'HH112','Method','regression',...
     'OOBPrediction','On');
 
-    %mdls{1} = fitrensemble(Data,'HH112');
-  
     
     save(m_config.save_m_data_mdl,'mdls');
     fprintf( 'm Model is created. \n')

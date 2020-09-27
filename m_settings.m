@@ -4,12 +4,12 @@ function m_opts= m_settings(paths)
     iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
     m_mode = 'training' ; %'training' , 'test'
     proj = 'm'; %'vt-rgb'
-    f_dimension = 512;% '512' or '4096'
+    f_dimension = 4096;% '512' or '4096'
     pre_net = 'vd16';% 'vd16', 'caffe'
     net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
-    m_on = 'paris'; % m model using Paris dataset.
+    job_datasets = 'tokyo247';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
+    m_on = 'paris'; % m model using Paris dataset. 'ox5k' or 'paris'
     m_directory = '/home/leo/mega/maqbool-data/';
     %%
     

@@ -68,4 +68,5 @@ function feats= m_computeRepresentation(net, im, bbox,num_box, varargin)
     feats(:,i+1)= reshape( gather(res_b1{1,i}(end).x), [], 1 );
     end
     clear res_b1;
+    clear im;
 end

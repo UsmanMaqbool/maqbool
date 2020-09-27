@@ -1,4 +1,4 @@
-function [res, recalls, recalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, printN, nSample,db,m_config)
+function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, printN, nSample,db,m_config)
     if nargin<6, nSample= inf; end
     
     rngState= rng;
@@ -258,7 +258,7 @@ function [res, recalls, recalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, p
             prob_ds_pre_sum = exp(-1*min_ds_all)*prob_ds_pre_sum;
 
             m_mat = prob_ds_pre_sum*ds_all_s_less_s1_sub;
-            
+            mean_min_top = exp(-1.*mean(x_q_feat_ds_all(1,1:10))); 
          
 
             crf_h = x_q_feat_ds_all(1,1:10);%double(m_ds_all(1,:));
@@ -266,7 +266,7 @@ function [res, recalls, recalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, p
             crf_pre = ds_pre(i,1);
          
              if ~(m_config.create_Model)
-                 crf_y = int8(logical(gt_top_ids(i,1)))+1;
+               %  crf_y = int8(logical(gt_top_ids(i,1)))+1;
                  XX = crf_X';
                  XX = reshape(XX,1,[]);
                  m_pridict = [crf_pre crf_h XX];
@@ -276,11 +276,30 @@ function [res, recalls, recalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, p
                 %store ds_pre
                 ds_new_top(i,1) = D_diff;
                 
-                D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
-                ds_new_top(i,2) = D_diff+5*(exp(-1.*D_diff_predict));
-                D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
-                ds_new_top(i,3) = D_diff+5*(exp(-1.*D_diff_predict));
-                
+              D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
+              ds_new_top(i,2) =  abs(D_diff+exp(-1.*D_diff_predict)); 
+             
+               
+              D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
+              ds_new_top(i,3) =  abs(D_diff+2*exp(-1.*D_diff_predict)); 
+
+              D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
+              ds_new_top(i,4) =  D_diff+exp(-1.*D_diff_predict); % work best on
+
+
+            % work best on 4096D
+            D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
+            ds_new_top(i,3) =  abs(D_diff+2*exp(-1.*D_diff_predict)); 
+              
+              
+              
+            % work best on 512D
+                % Random fitrensemble (Works better with 512 Dimension)
+                %mdls{3} = TreeBagger(50,Data,'HH112','Method','regression',...
+                %'OOBPrediction','On');
+              % D_diff_predict = predict(g_mdl.mdls{3},m_pridict);
+             %  ds_new_top(i,4) =  abs(D_diff+2*exp(-1.*D_diff_predict)); % work best on 512D
+
 
                 
                 m_table = [];
@@ -319,8 +338,12 @@ function [res, recalls, recalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, p
                end
 
               printRecalls(iTestSample)= thisRecall(printN);
-            end
-           
+              
+           end
+           allrecalls_pslen= recalls_m;
+           allrecalls_m= [mean(allrecalls_pslen(:,:,1),1 )' mean(allrecalls_pslen(:,:,2),1 )' mean(allrecalls_pslen(:,:,3),1 )'];
+        else
+            allrecalls_m = [];
         end
     end
     
