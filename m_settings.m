@@ -6,8 +6,8 @@ function m_opts= m_settings(paths)
     pre_net = 'vd16';% 'vd16', 'caffe'
     net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
-    m_on = 'paris'; % m model using Paris dataset. 'ox5k' or 'paris'
+    job_datasets = 'tokyo247';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
+    m_on = 'paris'; % m model using Paris dataset. 'oxford' or 'paris'
     m_directory = '/home/leo/mega/maqbool-data/';
     % XPS
     datasets_directory = '/home/leo/docker_ws/datasets/';
@@ -39,16 +39,6 @@ function m_opts= m_settings(paths)
         dbTest= dbTokyo247();
         datasets_path = paths.dsetRootTokyo247; 
         query_folder = 'query';
-
-    elseif strcmp(job_datasets,'paris')
-        dbTest= dbVGG('paris');
-        datasets_path = paths.dsetRootParis; 
-        query_folder = 'images';                
-        
-    elseif strcmp(job_datasets,'oxford')
-        dbTest= dbVGG('ox5k');
-        datasets_path = paths.dsetRootOxford; 
-        query_folder = 'images';
 
     elseif strcmp(job_datasets,'paris-vt-rgb')
         dbTest= dbVGG('paris');

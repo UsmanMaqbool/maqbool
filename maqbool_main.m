@@ -15,12 +15,21 @@ load( sprintf('%s%s.mat', paths.ourCNNs, netID), 'net' );
 
 if ~exist(m_config.save_m_data_mdl, 'file')
     m_config.create_Model = true;
-    dbTest= dbVGG(m_config.m_on);
-    m_config.datasets_path = paths.dsetRootParis; %% PC
-    m_config.query_folder = 'images';    
     
-    qFeatFn = sprintf('%s%s_%s_%s_q.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));   % just to create the files in the out folder
-    dbFeatFn = sprintf('%s%s_%s_%s_db.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));  % just to create the files in the out folder
+    if strcmp(m_config.m_on,'paris')
+        dbTest= dbVGG('paris');
+        m_config.datasets_path = paths.dsetRootParis; 
+        m_config.query_folder = 'images';                
+        
+    elseif strcmp(m_config.m_on,'oxford')
+        dbTest= dbVGG('ox5k');
+        m_config.datasets_path = paths.dsetRootOxford; 
+        m_config.query_folder = 'images';
+    
+    end
+       
+    qFeatFn = sprintf('%s%s_%s_q.bin', paths.outPrefix, netID, dbTest.name);   % just to create the files in the out folder
+    dbFeatFn = sprintf('%s%s_%s_db.bin', paths.outPrefix, netID, dbTest.name);  % just to create the files in the out folder
 
     % Create models if not available
     if ~exist(qFeatFn, 'file')
@@ -36,13 +45,13 @@ if ~exist(m_config.save_m_data_mdl, 'file')
     m_testFromFn(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
     m_model(m_config) 
     m_config.create_Model = false;
+    m_config = m_settings(paths); % Reset to original
 end
 
 %% Whole Process
-m_config = m_settings(paths);
 dbTest = m_config.dbTest;
-qFeatFn = sprintf('%s%s_%s_%s_q.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));   % just to create the files in the out folder
-dbFeatFn = sprintf('%s%s_%s_%s_db.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));  % just to create the files in the out folder
+qFeatFn = sprintf('%s%s_%s_q.bin', paths.outPrefix, netID, dbTest.name);   % just to create the files in the out folder
+dbFeatFn = sprintf('%s%s_%s_db.bin', paths.outPrefix, netID, dbTest.name);  % just to create the files in the out folder
 
 
 % Create models if not available

@@ -266,7 +266,6 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             crf_pre = ds_pre(i,1);
          
              if ~(m_config.create_Model)
-               %  crf_y = int8(logical(gt_top_ids(i,1)))+1;
                  XX = crf_X';
                  XX = reshape(XX,1,[]);
                  m_pridict = [crf_pre crf_h XX];
@@ -283,15 +282,10 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             %  D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
             %  ds_new_top(i,3) =  abs(D_diff+2*exp(-1.*D_diff_predict)); 
 
-            %  D_diff_predict = predict(g_mdl.mdls{3},m_pridict);
-            %  ds_new_top(i,4) =  D_diff+exp(-1.*D_diff_predict); % work best on
-
-
-            % work best on 4096D
-            D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
-            ds_new_top(i,3) =  abs(D_diff+2*exp(-1.*D_diff_predict)); 
-              
-              
+           
+            D_diff_predict = predict(g_mdl.mdls{3},m_pridict);
+            ds_new_top(i,3) =  D_diff+exp(-1.*D_diff_predict);
+            ds_new_top(i,4) =  abs(D_diff/D_diff_predict); 
               
             % work best on 512D
                 % Random fitrensemble (Works better with 512 Dimension)
@@ -300,6 +294,9 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
               % D_diff_predict = predict(g_mdl.mdls{3},m_pridict);
              %  ds_new_top(i,4) =  abs(D_diff+2*exp(-1.*D_diff_predict)); % work best on 512D
 
+%             % work best on 4096D
+%             D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
+%             ds_new_top(i,3) =  abs(D_diff+2*exp(-1.*D_diff_predict));
 
                 
                 m_table = [];
