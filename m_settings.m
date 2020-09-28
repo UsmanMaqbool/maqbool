@@ -1,20 +1,21 @@
 function m_opts= m_settings(paths)
-    
- 
+
     iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
-    m_mode = 'training' ; %'training' , 'test'
     proj = 'm'; %'vt-rgb'
     f_dimension = 4096;% '512' or '4096'
     pre_net = 'vd16';% 'vd16', 'caffe'
     net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'tokyo247';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
+    job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
     m_on = 'paris'; % m model using Paris dataset. 'ox5k' or 'paris'
     m_directory = '/home/leo/mega/maqbool-data/';
+    % XPS
+    datasets_directory = '/home/leo/docker_ws/datasets/';
+    % HKPC
+    %datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets'
+
     %%
-    
-    
-    
+
     if strcmp(job_net,'vd16_pitts30k')
         % PITTSBURGH DATASET
        netID= 'vd16_pitts30k_conv5_3_vlad_preL2_intra_white';
@@ -26,7 +27,7 @@ function m_opts= m_settings(paths)
 
     if strcmp(job_datasets,'pitts30k')
         dbTest= dbPitts('30k','test');
-        datasets_path = paths.dsetRootPitts;
+        datasets_path =  paths.dsetRootPitts;
         query_folder = 'queries';
 
     elseif strcmp(job_datasets,'pitts30k-vt-rgb')
@@ -41,17 +42,17 @@ function m_opts= m_settings(paths)
 
     elseif strcmp(job_datasets,'paris')
         dbTest= dbVGG('paris');
-        datasets_path = paths.dsetRootParis; %% PC
+        datasets_path = paths.dsetRootParis; 
         query_folder = 'images';                
         
     elseif strcmp(job_datasets,'oxford')
         dbTest= dbVGG('ox5k');
-        datasets_path = paths.dsetRootOxford; %% PC
+        datasets_path = paths.dsetRootOxford; 
         query_folder = 'images';
 
     elseif strcmp(job_datasets,'paris-vt-rgb')
         dbTest= dbVGG('paris');
-        datasets_path = paths.dsetRootHolidays; %% PC
+        datasets_path = paths.dsetRootHolidays; 
         query_folder = 'images';
     end
 
