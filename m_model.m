@@ -12,35 +12,12 @@ function m_model(m_config)
     Data = array2table(HH);
     hypopts = struct('ShowPlots',false,'Verbose',0,'UseParallel',false);
 
-    % Decision tree
-    mdls{1} = fitctree(Data,'HH112', ...
+   % Decision tree
+   mdls{1} = fitctree(Data,'HH112', ...
        'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
   
-   % mdls{1} = fitctree(Data,'HH112', 'OptimizeHyperparameters','auto');
-    
-    
-    
-    mdls{2} = fitrensemble(Data,'HH112');
-    
-   
-%   mdls{1} = fitcnb(Data,'HH112', ...
- %   'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
-
-    %mdls{1} = fitctree(Data,'HH112', 'OptimizeHyperparameters','auto');
-   % mdls{1} = fitctree(Data,'HH112', ...
-    %    'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
-
-    
-
-  %  mdls{2} = fitrensemble(Data,'HH112');
-
-    % Naive Bayes
-
-    % mdls{3} = fitcnb(Data,'HH112', ...
-    %     'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
-
-    
-    
+   % Simple 
+   mdls{2} = fitrensemble(Data,'HH112');
     
   % Random fitrensemble (Works better with 512 Dimension)
     mdls{3} = TreeBagger(50,Data,'HH112','Method','regression',...
