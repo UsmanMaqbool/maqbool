@@ -1,9 +1,9 @@
 function paths= localPaths()
     
     % XPS
-    datasets_directory = '/home/leo/docker_ws/datasets/';
+    %datasets_directory = '/home/leo/docker_ws/datasets/';
     % HKPC
-    %datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets'    
+    datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets/';    
 
     % --- dependencies
     
@@ -36,7 +36,7 @@ function paths= localPaths()
       
     paths.dsetRootParis= strcat(datasets_directory,'test_paris/'); % should contain images/ (with subfolders defense, eiffel, etc), groundtruth/ and corrupt.txt, and be writable
    
-    paths.dsetRootHolidays= strcat(datasets_directory,'NetvLad/Holidays/'); % should contain jpg/ for the original holidays, or jpg_rotated/ for rotated Holidays, and be writable
+    paths.dsetRootHolidays= strcat(datasets_directory,'Holidays/'); % should contain jpg/ for the original holidays, or jpg_rotated/ for rotated Holidays, and be writable
     
     % --- our networks
     % models used in our paper, download them from our research page   

@@ -15,10 +15,15 @@ load( sprintf('%s%s.mat', paths.ourCNNs, netID), 'net' );
 
 if ~exist(m_config.save_m_data_mdl, 'file')
     m_config.create_Model = true;
-    dbTest= dbVGG(m_config.m_on);
-    m_config.datasets_path = paths.dsetRootParis; %% PC
-    m_config.query_folder = 'images';    
+    %dbTest= dbVGG(m_config.m_on);
+    %m_config.datasets_path = paths.dsetRootParis; %% PC
+    %m_config.query_folder = 'images'; 
     
+    useRotated= false; % for rotated Holidays
+    dbTest= dbHolidays(useRotated); % it will automatically downscale images to (1024x768) pixels, as per the original testing procedure (see the Holidays website)
+    m_config.datasets_path = paths.dsetRootHolidays; 
+    m_config.query_folder = 'jpg_1024x768';
+
     qFeatFn = sprintf('%s%s_%s_%s_q.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));   % just to create the files in the out folder
     dbFeatFn = sprintf('%s%s_%s_%s_db.bin', paths.outPrefix, netID, dbTest.name,int2str(m_config.cropToDim));  % just to create the files in the out folder
 
@@ -72,7 +77,7 @@ dlmwrite(m_config.netvlad_results_fname,netvlad_results,'delimiter',' ');
 dlmwrite(m_config.m_d_results_fname,maqbool_results_D,'delimiter',' ');
 dlmwrite(m_config.m_r_results_fname,maqbool_results_R,'delimiter',' ');
 
-plot(opts.recallNs, allrecalls_m(:,3), 'bo-', ...
+plot(opts.recallNs, allrecalls_m(:,2), 'bo-', ...
      opts.recallNs, allrecalls_m(:,2), 'go-', ...
      opts.recallNs, allrecalls_m(:,1), 'ro-' ,...
      opts.recallNs, recall, 'ko-' ...

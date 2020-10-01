@@ -4,15 +4,15 @@ function m_opts= m_settings(paths)
     proj = 'm'; %'vt-rgb'
     f_dimension = 4096;% '512' or '4096'
     pre_net = 'vd16';% 'vd16', 'caffe'
-    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
+    net_dataset = 'tokyoTM'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
-    m_on = 'paris'; % m model using Paris dataset. 'ox5k' or 'paris'
+    job_datasets = 'tokyo247';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
+    m_on = 'holiday'; % m model using Paris dataset. 'ox5k' or 'paris', 'holiday'
     m_directory = '/home/leo/mega/maqbool-data/';
     % XPS
-    datasets_directory = '/home/leo/docker_ws/datasets/';
+    %datasets_directory = '/home/leo/docker_ws/datasets/';
     % HKPC
-    %datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets'
+    datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets';
 
     %%
 

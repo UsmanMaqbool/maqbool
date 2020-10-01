@@ -97,7 +97,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         
         %% Leo START
                 
-        qimg_path = strcat(dataset_path,'/',m_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
+        qimg_path = strcat(dataset_path,m_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
         q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
         q_feat = strrep(q_img,'.jpg','.mat');
 
@@ -288,7 +288,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
 
 
             % work best on 4096D
-            D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
+            D_diff_predict = predict(g_mdl.mdls{3},m_pridict);
             ds_new_top(i,3) =  abs(D_diff+2*exp(-1.*D_diff_predict)); 
               
               
@@ -341,7 +341,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
               
            end
            allrecalls_pslen= recalls_m;
-           allrecalls_m= [mean(allrecalls_pslen(:,:,1),1 )' mean(allrecalls_pslen(:,:,2),1 )' mean(allrecalls_pslen(:,:,3),1 )'];
+           allrecalls_m= [mean(allrecalls_pslen(:,:,1),1 )' mean(allrecalls_pslen(:,:,2),1 )'];
         
         else
             allrecalls_m = [];
