@@ -26,6 +26,11 @@ if ~exist(m_config.save_m_data_mdl, 'file')
         m_config.datasets_path = paths.dsetRootOxford; 
         m_config.query_folder = 'images';
     
+    elseif strcmp(m_config.m_on,'holiday')     
+        useRotated= false; % for rotated Holidays
+        dbTest= dbHolidays(useRotated); % it will automatically downscale images to (1024x768) pixels, as per the original testing procedure (see the Holidays website)
+        m_config.datasets_path = paths.dsetRootHolidays; 
+        m_config.query_folder = 'jpg_1024x768';
     end
        
     qFeatFn = sprintf('%s%s_%s_q.bin', paths.outPrefix, netID, dbTest.name);   % just to create the files in the out folder
@@ -74,15 +79,13 @@ end
 netvlad_results = [opts.recallNs',recall*100];
 maqbool_results_D = [opts.recallNs',allrecalls_m(:,1)*100];
 maqbool_results_R = [opts.recallNs',allrecalls_m(:,2)*100];
-maqbool_results_RR = [opts.recallNs',allrecalls_m(:,3)*100];
 
 
 dlmwrite(m_config.netvlad_results_fname,netvlad_results,'delimiter',' ');
 dlmwrite(m_config.m_d_results_fname,maqbool_results_D,'delimiter',' ');
 dlmwrite(m_config.m_r_results_fname,maqbool_results_R,'delimiter',' ');
 
-plot(opts.recallNs, allrecalls_m(:,3), 'bo-', ...
-     opts.recallNs, allrecalls_m(:,2), 'go-', ...
+plot(opts.recallNs, allrecalls_m(:,2), 'go-', ...
      opts.recallNs, allrecalls_m(:,1), 'ro-' ,...
      opts.recallNs, recall, 'ko-' ...
      ); grid on; xlabel('N'); ylabel('Recall@N'); title('Tokyo247 HYBRID Edge Image', 'Interpreter', 'none'); legend({'Previous Best','Original', 'New'});

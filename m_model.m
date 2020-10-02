@@ -3,14 +3,15 @@ function m_model(m_config)
     fprintf( 'Creating m Model \n')
 
     load(m_config.save_m_data,'data');
+    
     HH = [];
     for i = 1:size(data,2)
         XX = data(i).X';
         XX = reshape(XX,1,[]);
         HH = [HH ; data(i).pre data(i).H XX double(data(i).Y)];
     end
-    GTHH = sortrows(HH,112);
-    GT = GTHH(1:nnz(HH== 1)*2,:);
+    GT = sortrows(HH,112);
+    % GT = GTHH(1:nnz(HH== 1)*4,:);
     
     Data = array2table(GT);
     hypopts = struct('ShowPlots',false,'Verbose',0,'UseParallel',false);
@@ -18,14 +19,11 @@ function m_model(m_config)
    % Decision tree
    mdls{1} = fitctree(Data,'GT112', ...
        'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
-  
-   % Simple 
-   mdls{2} = fitrensemble(Data,'GT112');
-    
-  % Random fitrensemble (Works better with 512 Dimension)
-    mdls{3} = TreeBagger(50,Data,'GT112','Method','regression',...
-    'OOBPrediction','On');
 
+  % Random fitrensemble (Works better with 512 Dimension)
+    mdls{2} = TreeBagger(50,Data,'GT112','Method','regression',...
+    'OOBPrediction','On');    
+  %  
     
     save(m_config.save_m_data_mdl,'mdls');
     fprintf( 'm Model is created. \n')
