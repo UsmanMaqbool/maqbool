@@ -7,7 +7,7 @@ function m_opts= m_settings(paths)
     net_dataset = 'tokyoTM'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
     job_datasets = 'tokyo247';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
-    m_on = 'holiday'; % m model using Paris dataset. 'ox5k' or 'paris', 'holiday'
+    m_on = 'tokyoTM'; % m model using Paris dataset. 'ox5k' or 'paris', 'holiday'
     m_directory = '/home/leo/mega/maqbool-data/';
     % XPS
     %datasets_directory = '/home/leo/docker_ws/datasets/';
@@ -48,6 +48,8 @@ function m_opts= m_settings(paths)
 
     
     save_path = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension),'_',proj);
+    
+    save_m_on = strcat(m_directory,job_net,'_to_',m_on,'_',int2str(f_dimension),'_',proj);
     save_m_data = strcat(m_directory,'models/',job_net,'_to_',m_on,'_',int2str(f_dimension),'_data.mat');
     save_m_data_mdl = strcat(m_directory,'models/', job_net,'_to_',m_on,'_',int2str(f_dimension),'_mdls.mat');
 
@@ -70,6 +72,7 @@ function m_opts= m_settings(paths)
                 'save_results',             save_results, ...
                 'save_path_all',            save_path_all, ...
                 'save_m_data',              save_m_data, ...
+                'save_m_on',                save_m_on, ...
                 'save_m_data_mdl',          save_m_data_mdl, ...
                 'm_d_results_fname',        m_d_results_fname, ...
                 'm_r_results_fname',        m_r_results_fname, ...

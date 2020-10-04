@@ -24,6 +24,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
     show_output = m_config.show_output;  %test the boxes
     dataset_path = m_config.datasets_path; 
     save_path = m_config.save_path; 
+    save_m_on = m_config.save_m_on; 
     
     
     evalProg= tic;
@@ -71,21 +72,30 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         
         % if oxford or otherplace datasets, we can get the recall like this
         if(m_config.create_Model)
-            save_path = strcat(m_config.m_directory,m_config.job_net,'_to_',m_config.m_on,'_',int2str(m_config.cropToDim),'_',m_config.proj);
-            isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
-            ids= ids(~isIgnore);
-            % making 100 total
-            if size(ids,1) < total_top
-               differnce_ids =  total_top-size(ids,1);
-                for ids_i = 1:differnce_ids
-                    ids = [ids ;ids(ids_i,1)];
-                    ds_pre = [ds_pre ;ds_pre(ids_i,1)];
-                end
-            end
-            isPos= ismember(ids', db.posIDs{iTestSample});
-            gt_top = isPos';            
+%             save_path = strcat(m_config.m_directory,m_config.job_net,'_to_',m_config.m_on,'_',int2str(m_config.cropToDim),'_',m_config.proj);
+%             isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
+%             ids= ids(~isIgnore);
+%             % making 100 total
+%             if size(ids,1) < total_top
+%                differnce_ids =  total_top-size(ids,1);
+%                 for ids_i = 1:differnce_ids
+%                     ids = [ids ;ids(ids_i,1)];
+%                     ds_pre = [ds_pre ;ds_pre(ids_i,1)];
+%                 end
+%             end
+%             isPos= ismember(ids', db.posIDs{iTestSample});
+%             gt_top = isPos';            
+%         else
+            
+%               gt_top = isPos(iTest, ids);
+            
+
+            gt_top = logical(isPos(iTest, ids));
+            
+            q_img = strcat(save_m_on,'/', db.qImageFns{iTestSample, 1});  
         else
-            gt_top = isPos(iTest, ids);
+            
+            q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
         end
        
       %  thisRecall_ori= cumsum(logical(isPos(iTest, ids)) ) > 0; % yahan se get karta hai %db.cp (close position)
@@ -97,7 +107,6 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         %% Leo START
                 
         qimg_path = strcat(dataset_path,m_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
-        q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
         q_feat = strrep(q_img,'.jpg','.mat');
 
             
@@ -275,11 +284,11 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 ds_new_top(i,1) = D_diff;
                 
               D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
-              ds_new_top(i,2) =  abs(D_diff+5*exp(-5.*D_diff_predict)); 
+              ds_new_top(i,2) =  abs(D_diff+5*exp(-1.*D_diff_predict)); 
              
                
               D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
-              ds_new_top(i,3) =  abs(D_diff+5*exp(-5.*D_diff_predict)); 
+              ds_new_top(i,3) =  abs(D_diff+5*exp(-1.*D_diff_predict)); 
 
            
        
@@ -302,6 +311,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 ds_all = [];
              else
                  crf_y = int8(gt_top(i,1))+1;         %  for PARIS
+                 
                  crf_data = struct ('Y', crf_y,'H', crf_h,'X', crf_X, 'pre', crf_pre); 
                  data(:,i+((iTestSample-1)*100)) = crf_data;
              end

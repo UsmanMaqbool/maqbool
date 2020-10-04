@@ -1,9 +1,9 @@
 function paths= localPaths()
     
     % XPS
-    datasets_directory = '/home/leo/docker_ws/datasets/';
+    %datasets_directory = '/home/leo/docker_ws/datasets/';
     % HKPC
-    %datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets/';    
+    datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets/';    
 
     % --- dependencies
     
