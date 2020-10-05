@@ -10,8 +10,8 @@ function m_model(m_config)
         XX = reshape(XX,1,[]);
         HH = [HH ; data(i).pre data(i).H XX double(data(i).Y)];
     end
-    GT = sortrows(HH,112);
-    % GT = GTHH(1:nnz(HH== 1)*4,:);
+    GTHH = sortrows(HH,112);
+    GT = GTHH;%(1:nnz(GTHH== 1)*2,:);
     
     Data = array2table(GT);
     hypopts = struct('ShowPlots',false,'Verbose',0,'UseParallel',false);
@@ -20,6 +20,7 @@ function m_model(m_config)
    mdls{1} = fitctree(Data,'GT112', ...
        'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions', hypopts);
 
+   mdls{1} = prune(mdls{1});
   % Random fitrensemble (Works better with 512 Dimension)
     mdls{2} = TreeBagger(50,Data,'GT112','Method','regression',...
     'OOBPrediction','On');    

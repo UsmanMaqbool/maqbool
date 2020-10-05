@@ -30,7 +30,11 @@ if ~exist(m_config.save_m_data_mdl, 'file')
         useRotated= false; % for rotated Holidays
         dbTest= dbHolidays(useRotated); % it will automatically downscale images to (1024x768) pixels, as per the original testing procedure (see the Holidays website)
         m_config.datasets_path = paths.dsetRootHolidays; 
-        m_config.query_folder = 'jpg_1024x768';
+        m_config.query_folder = 'jpg_1024x768'; 
+     elseif strcmp(m_config.m_on,'tokyoTM')  
+        dbTest= dbTokyoTimeMachine('val');
+        m_config.datasets_path = paths.dsetRootTokyoTM; 
+        m_config.query_folder = 'images'; 
     end
        
     qFeatFn = sprintf('%s%s_%s_q.bin', paths.outPrefix, netID, dbTest.name);   % just to create the files in the out folder
@@ -69,6 +73,7 @@ end
 if ~exist(dbFeatFn, 'file')
     serialAllFeats(net, dbTest.dbPath, dbTest.dbImageFns, dbFeatFn, 'batchSize', 1); % adjust batchSize depending on your GPU / network size
 end
+m_config.create_Model = false;
 
 % Use m model
 [recalll, ~,recall,allrecalls_m, opts]= m_testFromFn(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
