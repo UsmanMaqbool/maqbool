@@ -11,7 +11,7 @@ function m_model(m_config)
         HH = [HH ; data(i).pre data(i).H XX double(data(i).Y)];
     end
     GTHH = sortrows(HH,112);
-    GT = GTHH(1:nnz(GTHH== 1)*2,:);
+    GT = GTHH;%(1:nnz(GTHH== 1)*2,:);
     
     Data = array2table(GT);
     hypopts = struct('ShowPlots',false,'Verbose',0,'UseParallel',false);
