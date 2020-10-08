@@ -1,12 +1,12 @@
 function m_opts= m_settings(paths)
 
     iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
-    proj = 'm'; %'vt-rgb'
-    f_dimension = 4096;% '512' or '4096'
+    proj = 'm_pre'; %'vt-rgb'
+    f_dimension = 512;% '512' or '4096'
     pre_net = 'vd16';% 'vd16', 'caffe'
-    net_dataset = 'tokyoTM'; % tokyoTM', 'pitts30k' 
+    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'tokyo247';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
+    job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
     m_on = 'tokyoTM'; % m model using Paris dataset. 'ox5k' or 'paris', 'holiday'
     m_directory = '/home/leo/mega/maqbool-data/';
     % XPS
@@ -56,8 +56,8 @@ function m_opts= m_settings(paths)
     save_path_all = strcat(m_directory,job_net,'_to_',job_datasets,'_box_50_plus','.mat');
         
     % Save result for tikz latex
-    m_d_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_D_',int2str(f_dimension),'.dat');
-    m_r_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_R_',int2str(f_dimension),'.dat');
+    m_d_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_D_50',int2str(f_dimension),'.dat');
+    m_r_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_D_100',int2str(f_dimension),'.dat');
     netvlad_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_netvlad_',int2str(f_dimension),'.dat');
     save_results = strcat('results/',job_net,'_to_',job_datasets,'_both_results_',int2str(f_dimension),'.mat');
     

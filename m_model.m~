@@ -11,15 +11,8 @@ function m_model(m_config)
         HH = [HH ; data(i).pre data(i).H XX double(data(i).Y)];
     end
     GTHH = sortrows(HH,112);
-    if nnz(GTHH== 2) < nnz(GTHH== 1)
-        GTHH = sortrows(HH,112,'descend');
-        GT = GTHH(1:nnz(GTHH== 2)*3,:);
-    else
-        GT = GTHH(1:nnz(GTHH== 1)*3,:);
-    end
-
-    
-    
+    min (nnz(GTHH== 1),nnz(GTHH== 2))
+    GT = GTHH;%(1:nnz(GTHH== 2)*2,:);
     
     Data = array2table(GT);
     hypopts = struct('ShowPlots',false,'Verbose',0,'UseParallel',false);
