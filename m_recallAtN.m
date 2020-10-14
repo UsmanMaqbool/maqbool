@@ -304,12 +304,11 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 ds_new_top(i,1) = D_diff;
                 
               D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
-              ds_new_top(i,2) =  abs(D_diff+exp(-1.*D_diff_predict)); 
+              ds_new_top(i,2) =  D_diff+exp(-1.*(D_diff_predict-1)); 
              
                
               D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
-              ds_new_top(i,3) =  abs(D_diff+exp(-1.*D_diff_predict)); 
-
+              ds_new_top(i,3) = D_diff+exp(-1.*(D_diff_predict-1)); 
            
        
               

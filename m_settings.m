@@ -1,7 +1,7 @@
 function m_opts= m_settings(paths)
 
     iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
-    proj = 'm_pre'; %'vt-rgb'
+    proj = 'm'; %'vt-rgb'
     f_dimension = 512;% '512' or '4096'
     pre_net = 'vd16';% 'vd16', 'caffe'
     net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
