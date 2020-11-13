@@ -2,12 +2,13 @@ function m_opts= m_settings(paths)
 
     iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
     proj = 'm'; %'vt-rgb'
-    f_dimension = 512;% '512' or '4096'
+    f_dimension = 4096;% '512' or '4096'
     pre_net = 'vd16';% 'vd16', 'caffe'
     net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
     job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
-    m_on = 'tokyoTM'; % m model using Paris dataset. 'ox5k' or 'paris', 'holiday'
+    m_on = 'tokyoTM'; % m model using Paris dataset. 'oxford' or 'paris', 'holiday'
+    m_limit = 500; % use ground truth till 250 of m_on
     m_directory = '/home/leo/mega/maqbool-data/';
     % XPS
     %datasets_directory = '/home/leo/docker_ws/datasets/';
@@ -30,23 +31,13 @@ function m_opts= m_settings(paths)
         datasets_path =  paths.dsetRootPitts;
         query_folder = 'queries';
 
-    elseif strcmp(job_datasets,'pitts30k-vt-rgb')
-        dbTest= dbPitts('30k','test');
-        datasets_path = '/mnt/0287D1936157598A/docker_ws/datasets/NetvLad/view-tags/Pittsburgh_Viewtag_3_rgb'; %% PC
-        query_folder = 'queries';
-
+ 
     elseif strcmp(job_datasets,'tokyo247')
         dbTest= dbTokyo247();
         datasets_path = paths.dsetRootTokyo247; 
         query_folder = 'query';
 
-    elseif strcmp(job_datasets,'paris-vt-rgb')
-        dbTest= dbVGG('paris');
-        datasets_path = paths.dsetRootHolidays; 
-        query_folder = 'images';
     end
-
-    
     save_path = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension),'_',proj);
     
     save_m_on = strcat(m_directory,job_net,'_to_',m_on,'_',int2str(f_dimension),'_',proj);
@@ -56,8 +47,8 @@ function m_opts= m_settings(paths)
     save_path_all = strcat(m_directory,job_net,'_to_',job_datasets,'_box_50_plus','.mat');
         
     % Save result for tikz latex
-    m_d_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_D_50',int2str(f_dimension),'.dat');
-    m_r_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_D_100',int2str(f_dimension),'.dat');
+    m_d_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_DT_50_',int2str(f_dimension),'.dat');
+    m_r_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_DT_100_',int2str(f_dimension),'.dat');
     netvlad_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_netvlad_',int2str(f_dimension),'.dat');
     save_results = strcat('results/',job_net,'_to_',job_datasets,'_both_results_',int2str(f_dimension),'.mat');
     
@@ -73,6 +64,7 @@ function m_opts= m_settings(paths)
                 'save_path_all',            save_path_all, ...
                 'save_m_data',              save_m_data, ...
                 'save_m_on',                save_m_on, ...
+                'save_m_limit',             m_limit, ...
                 'save_m_data_mdl',          save_m_data_mdl, ...
                 'm_d_results_fname',        m_d_results_fname, ...
                 'm_r_results_fname',        m_r_results_fname, ...

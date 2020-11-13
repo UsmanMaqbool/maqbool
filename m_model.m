@@ -10,13 +10,14 @@ function m_model(m_config)
         XX = reshape(XX,1,[]);
         HH = [HH ; data(i).pre data(i).H XX double(data(i).Y)];
     end
-    GTHH = sortrows(HH,112);
-     if nnz(GTHH== 2) < nnz(GTHH== 1)
-        GT = sortrows(HH,112,'descend');
-        GT = GTHH(1:nnz(GTHH== 2)*3,:);
-    else
-        GT = GTHH(1:nnz(GTHH== 1)*3,:);
-    end
+    GT = HH;
+%        if nnz(GTHH== 2) < nnz(GTHH== 1)
+%          GTHH = sortrows(HH,113,'descend');
+%          GT = GTHH(1:nnz(GTHH== 2)*2,:);
+%        else
+%          GTHH = sortrows(HH,113);
+%          GT = GTHH(1:nnz(GTHH== 1)*2,:);
+%       end
 
     
     paroptions = statset('UseParallel','Always');
@@ -33,11 +34,11 @@ function m_model(m_config)
 
  % mdls{1} = fitrgp(Data,'GT112');
   % nlm = fitnlm
-    mdls{1} = TreeBagger(50,Data,'GT112','Method','regression','OOBPrediction','On','Options', paroptions);  
+    mdls{1} = TreeBagger(50,Data,'GT113','Method','regression','OOBPrediction','On');  
   %  
    
    % Random fitrensemble (Works better with 512 Dimension)
-    mdls{2} = TreeBagger(100,Data,'GT112','Method','regression', 'OOBPrediction','On','Options', paroptions);  
+    mdls{2} = TreeBagger(100,Data,'GT113','Method','regression', 'OOBPrediction','On');  
   %  
     
     save(m_config.save_m_data_mdl,'mdls');
