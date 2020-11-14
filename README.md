@@ -9,7 +9,7 @@
 <p align="center">
   ⭐️ If you like MAQBOOL, give it a star on GitHub! ⭐️
   <br>
-  <a href="https://twitter.com/MUsmanMBhutta"><img src="https://img.shields.io/twitter/follow/MUsmanMBhutta.svg?style=social" align="right" alt="Twitter Follow" /></a>
+  <a href="https://twitter.com/MUsmanMBhutta"><img src="https://img.shields.io/twitter/follow/MUsmanMBhutta.svg?style=social" alt="Twitter Follow" /></a>
   <a href="#license"><img src="https://img.shields.io/github/license/sourcerer-io/hall-of-fame.svg?colorB=ff0000"></a>
 </p>
 >Documentation will be updated soon.
