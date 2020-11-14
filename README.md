@@ -1,5 +1,4 @@
 
->Documentation will be updated soon.
 <h1 align="center">
   <p align="center">MAQBOOL</p>
   <a href="https://usmanmaqbool.github.io/why-so-deep"><img src="https://usmanmaqbool.github.io/assets/images/maqbool/logo.jpg" alt="why-so-deep"></a>
@@ -12,3 +11,4 @@
     <a href="#license"><img src="https://img.shields.io/github/license/sourcerer-io/hall-of-fame.svg?colorB=ff0000"></a>
   ⭐️ If you like MAQBOOL, give it a star on GitHub! ⭐️
 </p>
+>Documentation will be updated soon.
