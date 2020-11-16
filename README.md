@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <p align="center">MAQBOOL</p>
-  <a href="https://usmanmaqbool.github.io/why-so-deep"><img src="http://127.0.0.1:4000/assets/images/maqbool/maqbool.png" alt="why-so-deep" style="height: 164px;"></a>
+  <a href="https://usmanmaqbool.github.io/why-so-deep"><img src="https://usmanmaqbool.github.io/assets/images/maqbool/maqbool.png" alt="why-so-deep" style="height: 164px;"></a>
   
 
 </h1>
