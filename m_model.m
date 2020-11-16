@@ -5,12 +5,12 @@ function m_model(m_config)
     load(m_config.save_m_data,'data');
     
     HH = [];
-    for i = 1:size(data,2)/2
+    for i = 1:size(data,2)
         XX = data(i).X';
         XX = reshape(XX,1,[]);
         HH = [HH ; data(i).pre data(i).H XX double(data(i).Y)];
     end
-    GT = HH;
+    GT = HH(1:25000,:);
 %        if nnz(GTHH== 2) < nnz(GTHH== 1)
 %          GTHH = sortrows(HH,113,'descend');
 %          GT = GTHH(1:nnz(GTHH== 2)*2,:);

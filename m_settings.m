@@ -3,24 +3,26 @@ function m_opts= m_settings(paths)
     iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
     proj = 'm'; %'vt-rgb'
     f_dimension = 4096;% '512' or '4096'
-    pre_net = 'vd16';% 'vd16', 'caffe'
+    pre_net = 'vd16';
     net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'pitts30k';  %'tokyo247' 'pitts30k' 'oxford' , 'paris', 'paris-vt-rgb', 'pitts30k-vt-rgb
-    m_on = 'tokyoTM'; % m model using Paris dataset. 'oxford' or 'paris', 'holiday'
-    m_limit = 500; % use ground truth till 250 of m_on
+    job_datasets = 'tokyo247';  %'pitts30k' , 'tokyo247'
+    m_on = 'tokyoTM'; % Model created using TokyoTM test dataset
+    m_limit = 250; % use ground truth till 250 of m_on
     m_directory = '/home/leo/mega/maqbool-data/';
-    % XPS
-    %datasets_directory = '/home/leo/docker_ws/datasets/';
-    % HKPC
-    datasets_directory = '/mnt/0287D1936157598A/docker_ws/docker_ws/maqbool-datasets';
-
+    
+    if f_dimension == 4096
+        m_alpha = 0.24;
+    else
+        m_alpha = 1;
+    end
+    
+ 
     %%
 
     if strcmp(job_net,'vd16_pitts30k')
         % PITTSBURGH DATASET
        netID= 'vd16_pitts30k_conv5_3_vlad_preL2_intra_white';
-
     elseif strcmp(job_net,'vd16_tokyoTM')
         % TOKYO DATASET
         netID= 'vd16_tokyoTM_conv5_3_vlad_preL2_intra_white';
@@ -30,14 +32,12 @@ function m_opts= m_settings(paths)
         dbTest= dbPitts('30k','test');
         datasets_path =  paths.dsetRootPitts;
         query_folder = 'queries';
-
- 
     elseif strcmp(job_datasets,'tokyo247')
         dbTest= dbTokyo247();
         datasets_path = paths.dsetRootTokyo247; 
         query_folder = 'query';
-
     end
+    
     save_path = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension),'_',proj);
     
     save_m_on = strcat(m_directory,job_net,'_to_',m_on,'_',int2str(f_dimension),'_',proj);
@@ -62,9 +62,10 @@ function m_opts= m_settings(paths)
                 'save_path',                save_path, ...
                 'save_results',             save_results, ...
                 'save_path_all',            save_path_all, ...
-                'save_m_data',              save_m_data, ...
+                'm_limit',                  m_limit, ...
                 'save_m_on',                save_m_on, ...
-                'save_m_limit',             m_limit, ...
+                'm_alpha',                  m_alpha, ...
+                'save_m_data',              save_m_data, ...
                 'save_m_data_mdl',          save_m_data_mdl, ...
                 'm_d_results_fname',        m_d_results_fname, ...
                 'm_r_results_fname',        m_r_results_fname, ...

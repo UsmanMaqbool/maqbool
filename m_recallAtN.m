@@ -25,8 +25,8 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
     dataset_path = m_config.datasets_path; 
     save_path = m_config.save_path; 
     save_m_on = m_config.save_m_on;
-    save_m_limit = m_config.save_m_limit;
-    
+    m_limit = m_config.m_limit;
+    m_alpha = m_config.m_alpha;
     
     evalProg= tic;
     
@@ -309,12 +309,12 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
               D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
              %  ds_new_top(i,2) =  abs(D_diff+exp(-1*(D_diff_predict))); 
               %  D_diff_predictt = abs((D_diff_predict/12)-1);
-                ds_new_top(i,2) =  abs(D_diff-0.24*log(D_diff_predict));   
+                ds_new_top(i,2) =  abs(D_diff-m_alpha*log(D_diff_predict));   
                
               D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
              %  ds_new_top(i,3) = abs(D_diff+exp(-1*(D_diff_predict))); 
               %  D_diff_predictt = abs((D_diff_predict/12)-1);
-                ds_new_top(i,3) =  abs(D_diff-0.24*log(D_diff_predict));   
+                ds_new_top(i,3) =  abs(D_diff-m_alpha*log(D_diff_predict));   
        
               
             % work best on 512D
@@ -421,7 +421,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         else
             allrecalls_m = [];
         end
-        if iTestSample == save_m_limit && m_config.create_Model
+        if iTestSample == m_limit && m_config.create_Model
             break;
         end
     end
