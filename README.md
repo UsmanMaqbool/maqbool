@@ -17,7 +17,7 @@ Documentation is avaiable at [project website](https://usmanmaqbool.github.io/wh
 
 ## To Compare the Results
 
-$$
+```math
 \overbrace{
     \underbrace{vd16}_\text{real} \_
     \underbrace{tokyoTM\_}_\text{trained on} to
@@ -27,7 +27,7 @@ $$
     \underbrace{512}_\text{feature dimension}.
     \underbrace{dat}
    }^\text{file name}
-$$
+```
 ## To Run
 ```
 run Maqbool_main.m
