@@ -15,19 +15,6 @@
 
 Documentation is avaiable at [project website](https://usmanmaqbool.github.io/why-so-deep). Please follow the installation guide below.
 
-## To Compare the Results
-
-```math
-\overbrace{
-    \underbrace{vd16}_\text{real} \_
-    \underbrace{tokyoTM\_}_\text{trained on} to
-    \underbrace{\_tokyo247}_\text{tested on}\_
-    \underbrace{maqbool}_\text{method}\_
-    \underbrace{DT\_100}_\text{distance tree size (MAQBOOL only)}\_
-    \underbrace{512}_\text{feature dimension}.
-    \underbrace{dat}
-   }^\text{file name}
-```
 ## To Run
 ```
 run Maqbool_main.m
