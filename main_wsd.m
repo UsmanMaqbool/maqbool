@@ -37,9 +37,9 @@ if ~exist(m_config.save_m_data_mdl, 'file')
     end
     
     testFromFn_wsd(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
-    m_model(m_config) 
+    model_wsd(m_config) 
     m_config.create_Model = false;
-    m_config = m_settings(paths); % Reset to original
+    m_config = config_wsd(paths); % Reset to original
 end
 
 %% Whole Process
@@ -61,7 +61,7 @@ end
 m_config.create_Model = false;
 
 % Use m model
-[recalll, ~,recall,allrecalls_m, opts]= m_testFromFn(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
+[recalll, ~,recall,allrecalls_m, opts]= testFromFn_wsd(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
 
 
 %% Results
