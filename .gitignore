@@ -1,2 +1,2 @@
-3rd-party-support
-results
+!3rd-party-support/*
+!results/*
