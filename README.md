@@ -19,7 +19,7 @@ Documentation is avaiable at [project website](https://usmanmaqbool.github.io/wh
 ```
 run main.m
 ```
-Change the setting in `setting.m` and set datasets path for NetVLAD in `localpaths.m`
+Change the setting in `setting.m` and set datasets path for NetVLAD in `localpaths.m` or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` directory.
 
 
 ## Installation
