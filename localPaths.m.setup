@@ -2,6 +2,7 @@ function paths= localPaths()
     
     % HK
     datasets_directory = '~/datasets/';    
+    m_directory = '~/maqbool-data/'; % Save MAQBOOL files
 
     % --- dependencies
     

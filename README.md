@@ -46,6 +46,7 @@ clone these repositiories [NetVLAD](#netvlad), [Edge Boxes](#edge-boxes), [Edges
 #### NetVLAD
 ```
 git clone https://github.com/Relja/netvlad.git
+cd netvlad && git clone https://github.com/Relja/relja_matlab.git
 ```
 Download the databases file (tokyo247.mat) and set the correct dsetSpecDir in localPaths.m and also add paths. 
 

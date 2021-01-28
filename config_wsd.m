@@ -1,15 +1,22 @@
-function m_opts= m_settings(paths)
+function m_opts= config_wsd(paths)
+    
+    % Controlling parameters
 
-    iTestSample_Start= 1; startfrom = 1;  show_output = 0; 
-    proj = 'm'; %'vt-rgb'
-    f_dimension = 4096;% '512' or '4096'
+    iTestSample_Start= 1; % Testing Images Index
+    startfrom = 1;        % NetVLAD recall images index  
+    
+    show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
+    proj = 'm'; 
+    f_dimension = 4096;   % '512' or '4096'
     pre_net = 'vd16';
-    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' 
+    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' (pre-trained model)
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'tokyo247';  %'pitts30k' , 'tokyo247'
-    m_on = 'tokyoTM'; % Model created using TokyoTM test dataset
-    m_limit = 250; % use ground truth till 250 of m_on
-    m_directory = '/home/leo/mega/maqbool-data/';
+    job_datasets = 'tokyo247';  %'pitts30k' , 'tokyo247' (Test on)
+    
+    m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
+    m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
+    
+    m_directory = paths.m_directory; % Save MAQBOOL files
     
     if f_dimension == 4096
         m_alpha = 0.24;
@@ -39,7 +46,6 @@ function m_opts= m_settings(paths)
     end
     
     save_path = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension),'_',proj);
-    
     save_m_on = strcat(m_directory,job_net,'_to_',m_on,'_',int2str(f_dimension),'_',proj);
     save_m_data = strcat(m_directory,'models/',job_net,'_to_',m_on,'_',int2str(f_dimension),'_data.mat');
     save_m_data_mdl = strcat(m_directory,'models/', job_net,'_to_',m_on,'_',int2str(f_dimension),'_mdls.mat');

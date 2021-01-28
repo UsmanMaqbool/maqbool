@@ -1,4 +1,4 @@
-function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, printN, nSample,db,m_config)
+function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, ns, printN, nSample,db,m_config)
     if nargin<6, nSample= inf; end
     
     rngState= rng;
@@ -70,34 +70,13 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
      
         iTest= toTest(iTestSample);
         
-        [ids ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
-       % ds_pre_max = max(ds_pre); ds_pre_min = min(ds_pre);
-       % ds_pre_mean = mean(ds_pre); ds_pre_var = var(ds_pre);
+        [ids, ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
+     
     
         ds = ds_pre - min(ds_pre(:));
-       % ds = ds ./ max(ds(:)); 
         
         % if oxford or otherplace datasets, we can get the recall like this
         if(m_config.create_Model)
-%             save_path = strcat(m_config.m_directory,m_config.job_net,'_to_',m_config.m_on,'_',int2str(m_config.cropToDim),'_',m_config.proj);
-%             isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
- %            ids= ids(~isIgnore);
-%             % making 100 total
-%             if size(ids,1) < total_top
-%                differnce_ids =  total_top-size(ids,1);
-%                 for ids_i = 1:differnce_ids
-%                     ids = [ids ;ids(ids_i,1)];
-%                     ds_pre = [ds_pre ;ds_pre(ids_i,1)];
-%                 end
-%             end
-%             isPos= ismember(ids', db.posIDs{iTestSample});
-%             gt_top = isPos';            
-                
-                %else
-           
-                   %gt_top = isPos(iTest, ids);
-
-
             %working for TokyoTM    
             gt_top = logical(isPos(iTest, ids));
 
@@ -107,11 +86,6 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
         end
        
-      %  thisRecall_ori= cumsum(logical(isPos(iTest, ids)) ) > 0; % yahan se get karta hai %db.cp (close position)
-        %ds_pre_gt = gt_top(isPos(iTest, ids));
-        %gt_top_ids = int8(gt_top/10);
-        %gt_top_ids(gt_top_ids>10) = 0;
-        
         
         %% Leo START
                 
@@ -138,7 +112,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
              x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
         else
 
-            q_feat = m_estimate_box_features(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
+            q_feat = estimate_box_features_wsd(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
             x_q_feat = load(q_feat);
 
         end
@@ -216,16 +190,12 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                     %DB8
                     %
 
-                    %related_Box_dis_top = x_q_feat_ds_all(1,col(jjj));
-
 
                     related_Box_dis = x_q_feat_ds_all(jjj,iii);   % 51X51
                   
 
                     related_Box_db = iii;
                     related_Box_q = jjj;
-                   % related_Box_q = ds_all_sort_index(row(jjj),col(jjj));
-
 
                     bb_q = x_q_feat_box_q(related_Box_q,1:4);
                     bb_db = x_q_feat_box_db(related_Box_db,1:4); % Fix sized, so es ko 50 waly ki zarorat nai hai                      
@@ -301,42 +271,20 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                  XX = reshape(XX,1,[]);
                  m_pridict = [crf_pre crf_h XX];
 
-
-
                 %store ds_pre
               ds_new_top(i,1) = D_diff;
                 
               D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
-             %  ds_new_top(i,2) =  abs(D_diff+exp(-1*(D_diff_predict))); 
-              %  D_diff_predictt = abs((D_diff_predict/12)-1);
-                ds_new_top(i,2) =  abs(D_diff-m_alpha*log(D_diff_predict));   
+              ds_new_top(i,2) =  abs(D_diff-m_alpha*log(D_diff_predict));   
                
               D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
-             %  ds_new_top(i,3) = abs(D_diff+exp(-1*(D_diff_predict))); 
-              %  D_diff_predictt = abs((D_diff_predict/12)-1);
-                ds_new_top(i,3) =  abs(D_diff-m_alpha*log(D_diff_predict));   
+              ds_new_top(i,3) =  abs(D_diff-m_alpha*log(D_diff_predict));   
        
-              
-            % work best on 512D
-            % Random fitrensemble (Works better with 512 Dimension)
-                %mdls{3} = TreeBagger(50,Data,'HH112','Method','regression',...
-                %'OOBPrediction','On');
-            %D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
-            %  ds_new_top(i,3) =  abs(D_diff+5*exp(-1.*D_diff_predict)); 
-            
-            
-            
-%             % work best on 4096D
-              % ds_new_top(i,2) =  abs(D_diff+exp(-1.*D_diff_predict)); 
-
-
-                
-                m_table = [];
-
-                ds_all = [];
+                        
+              m_table = [];
+              ds_all = [];
              else
                  crf_y = int8(gt_top(i,1))+1;         %  for PARIS
-                 
                  crf_data = struct ('Y', crf_y,'H', crf_h,'X', crf_X, 'pre', crf_pre); 
                  data(:,i+((iTestSample-1)*100)) = crf_data;
              end
@@ -350,10 +298,8 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
     
                 [C c_i] = sortrows(ds_new_top(:,j));
                 ids_new = ids;
-               % inegatifss = inegatif_i;
                 for i=1:total_top
                     ids_new(i,1) = ids(c_i(i,1));
-                   % inegatifss(i,1) = inegatif_i(c_i(i,1));
                 end
             
 
@@ -414,9 +360,6 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
 
                
            end
-           
-           
-           
            
         else
             allrecalls_m = [];
