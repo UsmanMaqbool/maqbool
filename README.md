@@ -17,9 +17,9 @@ Documentation is avaiable at [project website](https://usmanmaqbool.github.io/wh
 
 ## To Run
 ```
-run Maqbool_main.m
+run main.m
 ```
-Change the setting in `m_setting.m` and set datasets path for NetVLAD in `localpaths.m`
+Change the setting in `setting.m` and set datasets path for NetVLAD in `localpaths.m`
 
 
 ## Installation
@@ -34,7 +34,33 @@ git clone https://github.com/UsmanMaqbool/Maqbool.git
 cd maqbool/3rd-party-support
 ```
 
-clone these repositiories [Matconvnet](#Matconvnet), [NetVLAD](Matconvnet), [Edge Boxes](Matconvnet) and [Edges Boxes Toolbox](Matconvnet) into the `3rd-party-support`. Please follow the installation and configuration below.
+clone these repositiories [NetVLAD](#netvlad), [Edge Boxes](#edge-boxes), [Edges Boxes Toolbox](#edge-boxes-toolbox) and [Matconvnet](#Matconvnet) into the `3rd-party-support`. Please follow the installation and configuration below.
+
+#### NetVLAD
+```
+git clone https://github.com/Relja/netvlad.git
+```
+Download the databases file (tokyo247.mat) and set the correct dsetSpecDir in localPaths.m and also add paths. 
+
+#### Edge Boxes
+```
+git clone https://github.com/zchrissirhcz/edges
+```
+Not official edges, but fixed error for matlab > 2017
+Run in MATLAB
+```matlab
+cd edges
+run linux_startup.m
+```
+
+#### Edge Boxes Toolbox
+```
+git clone https://github.com/zchrissirhcz/toolbox.git
+```
+```matlab
+cd toolbox
+run linux_startup.m
+```
 
 #### Matconvnet
 ```
@@ -84,29 +110,3 @@ Possible Errors:
 
   Press <enterto keep the current choice[*], or type selection number: 2
   ```  
-
-#### NetVLAD
-```
-git clone https://github.com/Relja/netvlad.git
-```
-Download the databases file (tokyo247.mat) and set the correct dsetSpecDir in localPaths.m and also add paths. 
-
-#### Edge Boxes
-```
-git clone https://github.com/zchrissirhcz/edges
-```
-Not official edges, but fixed error for matlab > 2017
-Run in MATLAB
-```matlab
-cd edges
-run linux_startup.m
-```
-
-#### Edge Boxes ToolBox
-```
-git clone https://github.com/zchrissirhcz/toolbox.git
-```
-```matlab
-cd toolbox
-run linux_startup.m
-```
