@@ -19,9 +19,9 @@ Documentation is avaiable at [project website](https://usmanmaqbool.github.io/wh
 Firsly make sure, you have followed [installation](#installation) guide and downloaded [datasets and pre-trained models](#dataset-and-pre-trained-models). To fun the main file, open MATLAB and run
 
 ```matlab
-run main.m
+run main_wsd.m
 ```
-Change the setting in `setting.m` and set datasets path for NetVLAD in `localpaths.m` or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` directory. 
+Change the setting in `setting_wsd.m` and set datasets path for NetVLAD in `localpaths.m` or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` directory. 
 
 ### Dataset and Pre-trained Models
 
