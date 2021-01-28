@@ -29,13 +29,12 @@ Install Support (Ubuntu 20.04, Matlab 2019b, Cuda Driver 10.1)
 git clone https://github.com/UsmanMaqbool/Maqbool.git
 ```
 ### Install Prerequisites
+
+```sh
+cd maqbool/3rd-party-support
 ```
-cd Maqbool/ && mkdir 3rd-party-support
-```
-clone these repositiories [Matconvnet](#Matconvnet), [NetVLAD](Matconvnet), [Edge Boxes](Matconvnet) and [Edges Boxes Toolbox](Matconvnet).
 
-
-
+clone these repositiories [Matconvnet](#Matconvnet), [NetVLAD](Matconvnet), [Edge Boxes](Matconvnet) and [Edges Boxes Toolbox](Matconvnet) into the `3rd-party-support`. Please follow the installation and configuration below.
 
 #### Matconvnet
 ```
@@ -45,6 +44,7 @@ git clone https://github.com/vlfeat/matconvnet.git
 
 For centos OS, please use previous version `wget https://github.com/vlfeat/matconvnet/archive/v1.0-beta18.zip`
 
+Run in MATLAB
 ```matlab
 cd 3rd-party-support/matconvnet
 addpath matlab 
@@ -58,50 +58,55 @@ Possible Errors:
 `sudo apt install nvidia-cuda-toolkit`
 - if there is GCC version issue, try switching using update-alternatives. You can follow the tutorial below `Downgrade to GCC 7/8`
 
-    [Useful guide to install specific version of gcc](https://unix.stackexchange.com/questions/410723/how-to-install-a-specific-version-of-gcc-in-kali-linux)
+  [Useful guide to install specific version of gcc](https://unix.stackexchange.com/questions/410723/how-to-install-a-specific-version-of-gcc-in-kali-linux)
 
-    GCC 7 is available on linux it can be installed as follow :
-    ```
-    sudo apt install g++-7 gcc7 g++-8 gcc8
-    ```    
+  GCC 7 is available on linux it can be installed as follow :
+  ```
+  sudo apt install g++-7 gcc7 g++-8 gcc8
+  ```    
 
-    To switch between gcc7 or gcc8
+  To switch between gcc7 or gcc8
 
-    ```
-    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 1 --slave /usr/bin/g++ g++ /usr/bin/g++-8
-    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 2 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 1 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-    sudo update-alternatives --config gcc
+  ```
+  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 1 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 2 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 1 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+  sudo update-alternatives --config gcc
 
-    # sample output:
+  # sample output:
 
-    Selection |   Path       |     Priority  | Status
-    ---------|------------------------|----------------|-----------
-    * 0     |       /usr/bin/gcc-9 |  2     |    auto mode
-    1       |     /usr/bin/gcc-6  | 2        | manual mode
-    2       |     /usr/bin/gcc-7  | 1      |   manual mode
-          Selection |   Path       |     Priority  | Status
+  Selection |   Path       |     Priority  | Status
+  ---------|------------------------|----------------|-----------
+  * 0     |       /usr/bin/gcc-9 |  2     |    auto mode
+  1       |     /usr/bin/gcc-6  | 2        | manual mode
+  2       |     /usr/bin/gcc-7  | 1      |   manual mode
+        Selection |   Path       |     Priority  | Status
 
-    Press <enterto keep the current choice[*], or type selection number: 2
-    ```  
+  Press <enterto keep the current choice[*], or type selection number: 2
+  ```  
 
 #### NetVLAD
 ```
 git clone https://github.com/Relja/netvlad.git
 ```
-Download the databases file (tokyo247.mat) and set the correct dsetSpecDir in localPaths.m and also add paths.libReljaMatlab 
+Download the databases file (tokyo247.mat) and set the correct dsetSpecDir in localPaths.m and also add paths. 
 
 #### Edge Boxes
 ```
 git clone https://github.com/zchrissirhcz/edges
 ```
 Not official edges, but fixed error for matlab > 2017
-in matlab 'cd edges' and 'run linux_startup.m' and replace the 'edgeBoxes.m' with our edges boxes (to get the edges images as well')
+Run in MATLAB
+```matlab
+cd edges
+run linux_startup.m
+```
 
 #### Edge Boxes ToolBox
 ```
 git clone https://github.com/zchrissirhcz/toolbox.git
 ```
-in matlab 'cd toolbox' and 'run linux_startup.m'
-
+```matlab
+cd toolbox
+run linux_startup.m
 ```
