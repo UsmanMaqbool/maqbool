@@ -16,7 +16,8 @@
 Documentation is avaiable at [project website](https://usmanmaqbool.github.io/why-so-deep). Please follow the [installation](#installation) guide below.
 
 ## To Run
-Open MATLAB and run
+Firsly make sure, you have followed [installation](#installation) guide and downloaded [datasets and pre-trained models](#dataset-and-pre-trained-models). To fun the main file, open MATLAB and run
+
 ```matlab
 run main.m
 ```
@@ -83,8 +84,8 @@ addpath matlab
 vl_compilenn('enableGpu', true)
 ```
 
-Possible Errors:
-
+**Possible Errors:
+**
 - Also you need to disable the `C++11` flag in `.matlab/R2017a/mex_C++_glnxa64.xml` to `C++0x` 
 - if there is NVCC error, try installing Cudatoolkit
 `sudo apt install nvidia-cuda-toolkit`
