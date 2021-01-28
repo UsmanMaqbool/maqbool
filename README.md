@@ -13,14 +13,20 @@
   <a href="#license"><img src="https://img.shields.io/github/license/sourcerer-io/hall-of-fame.svg?colorB=ff0000"></a>
 </p>
 
-Documentation is avaiable at [project website](https://usmanmaqbool.github.io/why-so-deep). Please follow the installation guide below.
+Documentation is avaiable at [project website](https://usmanmaqbool.github.io/why-so-deep). Please follow the [installation](#installation) guide below.
 
 ## To Run
-```
+Open MATLAB and run
+```matlab
 run main.m
 ```
-Change the setting in `setting.m` and set datasets path for NetVLAD in `localpaths.m` or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` directory.
+Change the setting in `setting.m` and set datasets path for NetVLAD in `localpaths.m` or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` directory. 
 
+### Dataset and Pre-trained Models
+
+Please download pre-trained models and datasets (Pittsburgh, Tokyo247 and ToykoTM) from [NetVLAD project website](https://www.di.ens.fr/willow/research/netvlad/).
+
+We have used `VGG-16 + NetVLAD + whitening` related models only as it has top NetVLAD performance.
 
 ## Installation
 Install Support (Ubuntu 20.04, Matlab 2019b, Cuda Driver 10.1)
@@ -100,13 +106,11 @@ Possible Errors:
   sudo update-alternatives --config gcc
 
   # sample output:
+  Selection |       Path       | Priority  | Status
+  ----------|------------------|-----------|-----------
+  * 0       |  /usr/bin/gcc-9  |     2     | auto mode
+  1         |  /usr/bin/gcc-6  |     2     | manual mode
+  2         |  /usr/bin/gcc-7  |     1     | manual mode
 
-  Selection |   Path       |     Priority  | Status
-  ---------|------------------------|----------------|-----------
-  * 0     |       /usr/bin/gcc-9 |  2     |    auto mode
-  1       |     /usr/bin/gcc-6  | 2        | manual mode
-  2       |     /usr/bin/gcc-7  | 1      |   manual mode
-        Selection |   Path       |     Priority  | Status
-
-  Press <enterto keep the current choice[*], or type selection number: 2
+  Press <enter> to keep the current choice[*], or type selection number: 2
   ```  
