@@ -246,7 +246,6 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
             
             
             S1_logical = logical(S1);
-%             ds_all_s_less_s1 = S1_logical.*ds_all_s_less;
             ds_all_s_less_s1_sub = ds_all_s_less(1:Top_boxes,1:Top_boxes);
             
             min_ds_all = S_less_sorted(1:Top_boxes,1:Top_boxes);
