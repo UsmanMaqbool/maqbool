@@ -1,9 +1,7 @@
-
 <h1 align="center">
   <p align="center">MAQBOOL</p>
   <a href="https://usmanmaqbool.github.io/why-so-deep"><img src="https://usmanmaqbool.github.io/assets/images/maqbool/maqbool.png" alt="why-so-deep" style="height: 164px;"></a>
   
-
 </h1>
 <p align="center">Multiple AcuQitation of perceptiBle regiOns for priOr Learning </p>
 <p align="center">
@@ -15,6 +13,7 @@
 
 Documentation is avaiable at [project website](https://usmanmaqbool.github.io/why-so-deep). Please follow the [installation](#installation) guide below.
 
+Test
 ## To Run
 Firsly make sure, you have followed [installation](#installation) guide and downloaded [datasets and pre-trained models](#dataset-and-pre-trained-models). To fun the main file, open MATLAB and run
 
