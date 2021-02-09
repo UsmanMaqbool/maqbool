@@ -74,7 +74,6 @@ m_config.create_Model = false;
 netvlad_results = [opts.recallNs',recall*100];
 m_results_50_fname = [opts.recallNs',allrecalls_m(:,1)*100];
 m_results_100_fname = [opts.recallNs',allrecalls_m(:,2)*100];
-m_config.plot_title
 
 dlmwrite(m_config.netvlad_results_fname,netvlad_results,'delimiter',' ');
 dlmwrite(m_config.m_d_results_fname,m_results_50_fname,'delimiter',' ');

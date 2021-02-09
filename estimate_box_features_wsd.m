@@ -57,7 +57,7 @@ for jj = 1:size(ids,1)
 
 end
 
-  % save the files
+% save the files
 check_folder = fileparts(q_feat);
 if ~exist(check_folder, 'dir')
     mkdir(check_folder)

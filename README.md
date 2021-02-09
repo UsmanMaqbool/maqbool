@@ -20,7 +20,8 @@ Firsly make sure, you have followed [installation](#installation) guide and down
 ```matlab
 run main_wsd.m
 ```
-Change the setting in `setting_wsd.m` and set datasets path for NetVLAD in `localpaths.m` or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` directory. 
+- Change the setting in `setting_wsd.m` 
+- set datasets path for NetVLAD in `localpaths.m` or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` directory. Update paths of datasets folders of `datasets_directory`(datasets path) and `m_directory`(to store computed data / checkpoints)
 
 ### Dataset and Pre-trained Models
 

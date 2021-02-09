@@ -47,7 +47,8 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     num_box = 50; % Total = 10 (first one is the full images feature / box)
     Top_boxes = 10; % will be used.
     total_top = 100; %100;0
-    inegatif_i = [];
+    data_test = [];
+    
     
     if show_output
         fig1 = figure;
@@ -67,226 +68,242 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                        length(toTest), ...
                        sprintf('%.4f', mean(printRecalls(1:(iTestSample-1)))), evalProg);
         
-     
-        iTest= toTest(iTestSample);
-        
-        [ids, ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
-     
-    
-        ds = ds_pre - min(ds_pre(:));
-        
-        % if oxford or otherplace datasets, we can get the recall like this
-        if(m_config.create_Model)
-            %working for TokyoTM    
-            gt_top = logical(isPos(iTest, ids));
+        q_data_test = strcat(m_config.save_m_data_test,'/', db.qImageFns{iTestSample, 1});  
+        q_data_test = strrep(q_data_test,'.jpg','.mat');
 
-            q_img = strcat(save_m_on,'/', db.qImageFns{iTestSample, 1});  
+        if exist(q_data_test, 'file')
+            q_data_test_exist = true;
+            load(q_data_test); % load D_diff_predict_50 and D_diff_predict_100
+
         else
-            
-            q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
+            q_data_test_exist = false;
         end
-       
+                   
+                   
         
-        %% Leo START
-                
-        qimg_path = strcat(dataset_path,m_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
+           
+            iTest= toTest(iTestSample);
+            [ids, ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
+            ds = ds_pre - min(ds_pre(:));
+
+         if ~q_data_test_exist
+            % if oxford or otherplace datasets, we can get the recall like this
+            if(m_config.create_Model)
+                %working for TokyoTM    
+                gt_top = logical(isPos(iTest, ids));
+
+                q_img = strcat(save_m_on,'/', db.qImageFns{iTestSample, 1});  
+            else
+
+                q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
+            end
+
+
+            %% Leo START
+
+            qimg_path = strcat(dataset_path,m_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
+
+            if show_output
+                qq_img = imread(qimg_path);
+                p_margin = 0.002;
+                subplot_tight(2, 7, [1 2 8 9], p_margin);
+                imshow(qq_img); %
+                ntitle(['Query Image'],...
+                    'location','south',...
+                    'FontSize',10,...
+                    'backgroundcolor','w');
+            end
+
+
+
+            q_feat = strrep(q_img,'.jpg','.mat');
+
+
+            if exist(q_feat, 'file')
+                 x_q_feat = load(q_feat);
+                 x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
+            else
+
+                q_feat = estimate_box_features_wsd(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
+                x_q_feat = load(q_feat);
+
+            end
+
+            total_top = size(ids,1); %100;0
+
+
+    %%        
+            SLEN_top = zeros(total_top,2); 
+
+            exp_ds_pre = exp(-1.*ds_pre);
+            ds_pre_diff = diff(ds_pre);
+            ds_pre_diff = [0 ; ds_pre_diff ];
+            exp_ds_pre_sum = sum(exp_ds_pre);
+            prob_q_db = exp_ds_pre/exp_ds_pre_sum;
+            x_q_feat_ds_all = [];
+            min_ds_pre_all = [];
+
+            % figure;
+
+            for i=startfrom:total_top   
+                x_q_feat_ds= x_q_feat.ds_all_file(i).ds_all_full; % 51x50
+                x_q_feat_ds_all = [x_q_feat_ds_all ;x_q_feat_ds];  % 5100 x 50
+
+            end
+            ds_box_all_sum = sum(x_q_feat_ds_all(:));
         
-        if show_output
-            qq_img = imread(qimg_path);
-            p_margin = 0.002;
-            subplot_tight(2, 7, [1 2 8 9], p_margin);
-            imshow(qq_img); %
-            ntitle(['Query Image'],...
-                'location','south',...
-                'FontSize',10,...
-                'backgroundcolor','w');
         end
-        
-        
-        
-        q_feat = strrep(q_img,'.jpg','.mat');
-
-            
-        if exist(q_feat, 'file')
-             x_q_feat = load(q_feat);
-             x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
-        else
-
-            q_feat = estimate_box_features_wsd(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
-            x_q_feat = load(q_feat);
-
-        end
-
-        total_top = size(ids,1); %100;0
-    
-
-%%        
-        SLEN_top = zeros(total_top,2); 
-       
-        exp_ds_pre = exp(-1.*ds_pre);
-        ds_pre_diff = diff(ds_pre);
-        ds_pre_diff = [0 ; ds_pre_diff ];
-        exp_ds_pre_sum = sum(exp_ds_pre);
-        prob_q_db = exp_ds_pre/exp_ds_pre_sum;
-        x_q_feat_ds_all = [];
-        min_ds_pre_all = [];
-
-        % figure;
-            
-        for i=startfrom:total_top   
-            x_q_feat_ds= x_q_feat.ds_all_file(i).ds_all_full; % 51x50
-            x_q_feat_ds_all = [x_q_feat_ds_all ;x_q_feat_ds];  % 5100 x 50
-
-        end
-        ds_box_all_sum = sum(x_q_feat_ds_all(:));
-        
-    
         
         for i=startfrom:total_top 
  
-            
-           %Single File Load
-           x_q_feat_ds_all = x_q_feat.ds_all_file(i).ds_all_full; %51*50         first match ka box
-           x_q_feat_box_q =  x_q_feat.q_bbox;                       %51*5
-           x_q_feat_box_db = x_q_feat.db_bbox_file(i).bboxdb;       % 51*5
-
-           
-           x_q_feat_ds_all_exp = exp(-1.*x_q_feat_ds_all); % jj first match
-            
-           sum_ds_all_Prob = sum(x_q_feat_ds_all_exp(:));
-           
-           
-           % excluding the top
-           
-           ds_all = x_q_feat_ds_all(2:end,:);  
-           [ds_all_sort ds_all_sort_index] = sort(ds_all);
-          
-            diff2_ds_all = diff(diff(ds_all));
-            diff2_ds_all_less = diff2_ds_all;
-
-            
-            ds_all_less = x_q_feat_ds_all-max(ds_pre(:));
-
-            s=sign(ds_all_less); 
-            
-            inegatif=sum(s(:)==-1);
-
-            S_less = s; S_less(S_less>0) = 0; 
-            S_less = abs(S_less).*x_q_feat_ds_all; 
-         
-            
-            D_diff = ds_pre(i,1); 
-            current_diff = ds_pre_diff(i,1); 
-            exp_relative_diff = exp(-1.*ds_pre_diff(i,1)); %*exp_related_Box_dis;
-                           
-           [row,col] = size(x_q_feat_ds_all);    
-            
-           box_var_db = [];
-            
-           for iii = 1: col
-                for jjj = 1:row 
-
-                    %Query -> Row and DB -> DB1 DB2 DB3 DB4 DB5 DB6 DB7
-                    %DB8
-                    %
+           if ~q_data_test_exist 
+               %Single File Load
+               x_q_feat_ds_all = x_q_feat.ds_all_file(i).ds_all_full; %51*50         first match ka box
+               x_q_feat_box_q =  x_q_feat.q_bbox;                       %51*5
+               x_q_feat_box_db = x_q_feat.db_bbox_file(i).bboxdb;       % 51*5
 
 
-                    related_Box_dis = x_q_feat_ds_all(jjj,iii);   % 51X51
-                  
+               x_q_feat_ds_all_exp = exp(-1.*x_q_feat_ds_all); % jj first match
 
-                    related_Box_db = iii;
-                    related_Box_q = jjj;
+               % excluding the top
 
-                    bb_q = x_q_feat_box_q(related_Box_q,1:4);
-                    bb_db = x_q_feat_box_db(related_Box_db,1:4); % Fix sized, so es ko 50 waly ki zarorat nai hai                      
+               ds_all = x_q_feat_ds_all(2:end,:);  
+               [ds_all_sort ds_all_sort_index] = sort(ds_all);
 
-                    q_size = x_q_feat_box_q(1,3)*(x_q_feat_box_q(1,4));  % wrong size, 3 se multiply howa howa hai
-                    db_size = x_q_feat_box_db(1,3)*(x_q_feat_box_db(1,4));
-
-                    q_width_height = (bb_q(1,3)*bb_q(1,4))/(q_size);
-                    db_width_height = (bb_db(1,3)*bb_db(1,4))/(db_size);
-
-                    exp_q_width_height = exp(-1.*(1-q_width_height));
-                    exp_db_width_height = exp(-1.*(1-db_width_height));
+                diff2_ds_all = diff(diff(ds_all));
+                diff2_ds_all_less = diff2_ds_all;
 
 
-                    sum_distance = ds_pre(1,1)+related_Box_dis;
-                    exp_sum_distance = exp(-1.*sum_distance); %*exp_related_Box_dis;
+                ds_all_less = x_q_feat_ds_all-max(ds_pre(:));
 
-                    ds_all_box(related_Box_q,related_Box_db) = 10*exp_relative_diff*exp_sum_distance*exp_q_width_height*exp_db_width_height;
+                s=sign(ds_all_less); 
 
-                end
-           end
-                
-         
-           ds_all_box_sorted = zeros(num_box,num_box);
-           S_less_Nr_sorted = zeros(num_box,num_box);
- 
-           for jj = 1: num_box
-               for ii = 1 : num_box
-                    ii_index = ds_all_sort_index(ii,jj);
-                    ds_all_box_sorted(ii,jj) = ds_all_box(ii_index+1,jj); %51*51
-                    ds_all_less_sorted(ii,jj) = ds_all_less(ii_index+1,jj);
-                    S_less_sorted(ii,jj) = S_less(ii_index+1,jj);
+                inegatif=sum(s(:)==-1);
+
+                S_less = s; S_less(S_less>0) = 0; 
+                S_less = abs(S_less).*x_q_feat_ds_all; 
+
+
+                D_diff = ds_pre(i,1); 
+                current_diff = ds_pre_diff(i,1); 
+                exp_relative_diff = exp(-1.*ds_pre_diff(i,1)); %*exp_related_Box_dis;
+
+               [row,col] = size(x_q_feat_ds_all);    
+
+               box_var_db = [];
+
+               for iii = 1: col
+                    for jjj = 1:row 
+
+                        %Query -> Row and DB -> DB1 DB2 DB3 DB4 DB5 DB6 DB7
+                        %DB8
+                        %
+
+
+                        related_Box_dis = x_q_feat_ds_all(jjj,iii);   % 51X51
+
+
+                        related_Box_db = iii;
+                        related_Box_q = jjj;
+
+                        bb_q = x_q_feat_box_q(related_Box_q,1:4);
+                        bb_db = x_q_feat_box_db(related_Box_db,1:4); % Fix sized, so es ko 50 waly ki zarorat nai hai                      
+
+                        q_size = x_q_feat_box_q(1,3)*(x_q_feat_box_q(1,4));  % wrong size, 3 se multiply howa howa hai
+                        db_size = x_q_feat_box_db(1,3)*(x_q_feat_box_db(1,4));
+
+                        q_width_height = (bb_q(1,3)*bb_q(1,4))/(q_size);
+                        db_width_height = (bb_db(1,3)*bb_db(1,4))/(db_size);
+
+                        exp_q_width_height = exp(-1.*(1-q_width_height));
+                        exp_db_width_height = exp(-1.*(1-db_width_height));
+
+
+                        sum_distance = ds_pre(1,1)+related_Box_dis;
+                        exp_sum_distance = exp(-1.*sum_distance); %*exp_related_Box_dis;
+
+                        ds_all_box(related_Box_q,related_Box_db) = 10*exp_relative_diff*exp_sum_distance*exp_q_width_height*exp_db_width_height;
+
+                    end
                end
+
+
+               ds_all_box_sorted = zeros(num_box,num_box);
+               S_less_Nr_sorted = zeros(num_box,num_box);
+
+               for jj = 1: num_box
+                   for ii = 1 : num_box
+                        ii_index = ds_all_sort_index(ii,jj);
+                        ds_all_box_sorted(ii,jj) = ds_all_box(ii_index+1,jj); %51*51
+                        ds_all_less_sorted(ii,jj) = ds_all_less(ii_index+1,jj);
+                        S_less_sorted(ii,jj) = S_less(ii_index+1,jj);
+                   end
+               end
+
+               ds_all_s_less = ds_all_box_sorted.*ds_all_less_sorted; 
+
+
+                S1 = S_less_sorted; 
+                S1_mean = sum(S1(:))/nnz(S1);
+                S1(S1>S1_mean) = 0;
+                S2 = S1; 
+                S2_mean = sum(S2(:))/nnz(S2);
+                S2(S2>S2_mean) = 0;
+                S3 = S2; 
+                S3_mean = sum(S3(:))/nnz(S3);
+                S3(S3>S3_mean) = 0;
+
+
+                S1_logical = logical(S1);
+                ds_all_s_less_s1_sub = ds_all_s_less(1:Top_boxes,1:Top_boxes);
+
+                min_ds_all = S_less_sorted(1:Top_boxes,1:Top_boxes);
+                if (nnz(min_ds_all) > 0)
+                    min_ds_all = min(min_ds_all(min_ds_all > 0));
+                else
+                    min_ds_all = 0;
+                end
+                prob_ds_pre_sum = exp_ds_pre(i,1)/exp_ds_pre_sum;
+                prob_ds_pre_sum = exp(-1*min_ds_all)*prob_ds_pre_sum;
+
+                m_mat = prob_ds_pre_sum*ds_all_s_less_s1_sub;
+                mean_min_top = exp(-1.*mean(x_q_feat_ds_all(1,1:10))); 
+
+
+                crf_h = [current_diff x_q_feat_ds_all(1,1:10)];%double(m_ds_all(1,:));
+                crf_X = m_mat;%double(m_ds_all(2:11,:));
+                crf_pre = ds_pre(i,1);
            end
-           
-           ds_all_s_less = ds_all_box_sorted.*ds_all_less_sorted; 
-                            
-
-            S1 = S_less_sorted; 
-            S1_mean = sum(S1(:))/nnz(S1);
-            S1(S1>S1_mean) = 0;
-            S2 = S1; 
-            S2_mean = sum(S2(:))/nnz(S2);
-            S2(S2>S2_mean) = 0;
-            S3 = S2; 
-            S3_mean = sum(S3(:))/nnz(S3);
-            S3(S3>S3_mean) = 0;
-            
-            
-            S1_logical = logical(S1);
-            ds_all_s_less_s1_sub = ds_all_s_less(1:Top_boxes,1:Top_boxes);
-            
-            min_ds_all = S_less_sorted(1:Top_boxes,1:Top_boxes);
-            if (nnz(min_ds_all) > 0)
-                min_ds_all = min(min_ds_all(min_ds_all > 0));
-            else
-                min_ds_all = 0;
-            end
-            prob_ds_pre_sum = exp_ds_pre(i,1)/exp_ds_pre_sum;
-            prob_ds_pre_sum = exp(-1*min_ds_all)*prob_ds_pre_sum;
-
-            m_mat = prob_ds_pre_sum*ds_all_s_less_s1_sub;
-            mean_min_top = exp(-1.*mean(x_q_feat_ds_all(1,1:10))); 
-         
-
-            crf_h = [current_diff x_q_feat_ds_all(1,1:10)];%double(m_ds_all(1,:));
-            crf_X = m_mat;%double(m_ds_all(2:11,:));
-            crf_pre = ds_pre(i,1);
-         
-             if ~(m_config.create_Model)
-                 XX = crf_X';
-                 XX = reshape(XX,1,[]);
-                 m_pridict = [crf_pre crf_h XX];
-
-                %store ds_pre
-              ds_new_top(i,1) = D_diff;
-                
-              D_diff_predict = predict(g_mdl.mdls{1},m_pridict);
-              ds_new_top(i,2) =  abs(D_diff-m_alpha*log(D_diff_predict));   
+           if ~(m_config.create_Model)
                
-              D_diff_predict = predict(g_mdl.mdls{2},m_pridict);
-              ds_new_top(i,3) =  abs(D_diff-m_alpha*log(D_diff_predict));   
+               if ~q_data_test_exist
+
+                   XX = crf_X';
+                   XX = reshape(XX,1,[]);
+                   m_pridict = [crf_pre crf_h XX];
+                   
+                   D_diff_predict_50 = predict(g_mdl.mdls{1},m_pridict);
+                   D_diff_predict_100 = predict(g_mdl.mdls{2},m_pridict);
+                   data_test = [data_test; D_diff_predict_50 D_diff_predict_100];
+ 
+               else
+               
+                D_diff_predict_50 = data_test(i,1);
+                D_diff_predict_100 = data_test(i,2);
+               end
+               %store ds_pre
+               ds_new_top(i,1) = ds_pre(i,1);
+               ds_new_top(i,2) =  abs(ds_pre(i,1)-m_alpha*log(D_diff_predict_50));   
+               ds_new_top(i,3) =  abs(ds_pre(i,1)-m_alpha*log(D_diff_predict_100));   
        
-                        
-              m_table = [];
-              ds_all = [];
-             else
+                 
+               m_table = [];
+               ds_all = [];
+           else
                  crf_y = int8(gt_top(i,1))+1;         %  for PARIS
                  crf_data = struct ('Y', crf_y,'H', crf_h,'X', crf_X, 'pre', crf_pre); 
                  data(:,i+((iTestSample-1)*100)) = crf_data;
-             end
+           end
         
         end
    
@@ -366,6 +383,16 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
         if iTestSample == m_limit && m_config.create_Model
             break;
         end
+        if ~q_data_test_exist
+
+            % check folder
+            check_folder = fileparts(q_data_test);
+            if ~exist(check_folder, 'dir')
+                mkdir(check_folder)
+            end
+            save(q_data_test,'data_test');
+            data_test = [];
+        end
     end
     
     t= toc(evalProg);
@@ -381,6 +408,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
         relja_display('%03d %.4f\n', [ns(:), mean(recalls,1)']');
         rng(rngState);
     end
+   
 end
 
 function [mat_boxes,im, edge_image, hyt, wyd] = img_Bbox(db_img,model)
