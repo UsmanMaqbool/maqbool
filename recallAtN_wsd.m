@@ -405,7 +405,10 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
         res= mean(printRecalls);
         relja_display('\n\trec@%d= %.4f, time= %.4f s, avgTime= %.4f ms\n', printN, res, t, t*1000/length(toTest));
         relja_display('%03d %.4f\n', [ns(:), mean(recalls,1)']');
-        relja_display('%03d %.4f\n', [ns(:), mean(recalls,1)']');
+        fprintf( 'NS    NetVLAD   MAQBOOL_50  MAQBOOL_100   \n')
+        relja_display('%03d   %.4f    %.4f      %.4f\n', [ns(:), mean(recalls,1)', mean(recalls_m(:,:,1),1)',mean(recalls_m(:,:,2),1)']');
+        
+        
         rng(rngState);
     end
    
