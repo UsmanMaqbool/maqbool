@@ -9,9 +9,9 @@ function m_opts= config_wsd(paths)
     proj = 'm'; 
     f_dimension = 512;   % '512' or '4096'
     pre_net = 'vd16';
-    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' (pre-trained model)
+    net_dataset = 'tokyoTM'; % tokyoTM', 'pitts30k' (pre-trained model)
     job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'pitts30k';  %'pitts30k' , 'tokyo247' (Test on)
+    job_datasets = 'tokyo247';  %'pitts30k' , 'tokyo247' (Test on)
     
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
     m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
@@ -19,9 +19,9 @@ function m_opts= config_wsd(paths)
     m_directory = paths.m_directory; % Save MAQBOOL files
     
     if f_dimension == 4096
-        m_alpha = 0.24;
+        m_alpha = 0.15;
     else
-        m_alpha = 1;
+        m_alpha = 1.15;
     end
     
  
