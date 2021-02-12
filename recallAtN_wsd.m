@@ -76,12 +76,10 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
             load(q_data_test); % load D_diff_predict_50 and D_diff_predict_100
 
         else
+            %if you dont want to compute, you can download from NETVLAD's project page.
+            print_level_wsd(m_config.save_m_data_test,3); % Download pre-computed files    
             q_data_test_exist = false;
         end
-                   
-                   
-        
-           
             iTest= toTest(iTestSample);
             [ids, ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
             ds = ds_pre - min(ds_pre(:));
@@ -92,10 +90,12 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                 %working for TokyoTM    
                 gt_top = logical(isPos(iTest, ids));
 
-                q_img = strcat(save_m_on,'/', db.qImageFns{iTestSample, 1});  
+                q_img = strcat(save_m_on,'/', db.qImageFns{iTestSample, 1});
+                zip_folder = save_m_on;
             else
 
                 q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
+                zip_folder = save_path;
             end
 
 
@@ -123,7 +123,8 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                  x_q_feat = load(q_feat);
                  x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
             else
-
+                %if you dont want to compute, you can download from NETVLAD's project page.
+                print_level_wsd(zip_folder,4); % Download pre-computed files    
                 q_feat = estimate_box_features_wsd(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
                 x_q_feat = load(q_feat);
 
