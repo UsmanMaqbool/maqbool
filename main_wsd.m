@@ -1,4 +1,4 @@
-clc;
+  clc;
 clear all;
 
 addpath(genpath(pwd));
