@@ -141,17 +141,17 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
             ds_pre_diff = [0 ; ds_pre_diff ];
             exp_ds_pre_sum = sum(exp_ds_pre);
             prob_q_db = exp_ds_pre/exp_ds_pre_sum;
-            x_q_feat_ds_all = [];
+            C_j_nn = [];
             min_ds_pre_all = [];
 
             % figure;
 
             for i=startfrom:total_top   
                 x_q_feat_ds= x_q_feat.ds_all_file(i).ds_all_full; % 51x50
-                x_q_feat_ds_all = [x_q_feat_ds_all ;x_q_feat_ds];  % 5100 x 50
+                C_j_nn = [C_j_nn ;x_q_feat_ds];  % 5100 x 50
 
             end
-            ds_box_all_sum = sum(x_q_feat_ds_all(:));
+            ds_box_all_sum = sum(C_j_nn(:));
         
         end
         
@@ -159,37 +159,37 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
  
            if ~q_data_test_exist 
                %Single File Load
-               x_q_feat_ds_all = x_q_feat.ds_all_file(i).ds_all_full; %51*50         first match ka box
+               C_j_nn = x_q_feat.ds_all_file(i).ds_all_full; %51*50         first match ka box
                x_q_feat_box_q =  x_q_feat.q_bbox;                       %51*5
                x_q_feat_box_db = x_q_feat.db_bbox_file(i).bboxdb;       % 51*5
 
 
-               x_q_feat_ds_all_exp = exp(-1.*x_q_feat_ds_all); % jj first match
+               C_j_nn_exp = exp(-1.*C_j_nn); % jj first match
 
                % excluding the top
 
-               ds_all = x_q_feat_ds_all(2:end,:);  
-               [ds_all_sort ds_all_sort_index] = sort(ds_all);
+               C_n_n = C_j_nn(2:end,:);  
+               [C_n_n_sort C_n_n_sort_index] = sort(C_n_n);
 
-                diff2_ds_all = diff(diff(ds_all));
-                diff2_ds_all_less = diff2_ds_all;
+                diff2_C_n_n = diff(diff(C_n_n));
+                diff2_C_j_f = diff2_C_n_n;
 
 
-                ds_all_less = x_q_feat_ds_all-max(ds_pre(:));
+                C_j_f = C_j_nn-max(ds_pre(:));  % d_c^max
 
-                s=sign(ds_all_less); 
+                s=sign(C_j_f); 
 
                 inegatif=sum(s(:)==-1);
 
-                S_less = s; S_less(S_less>0) = 0; 
-                S_less = abs(S_less).*x_q_feat_ds_all; 
+                D_j = s; D_j(D_j>0) = 0; 
+                C_j_nn = abs(D_j).*C_j_nn; 
 
 
                 D_diff = ds_pre(i,1); 
                 current_diff = ds_pre_diff(i,1); 
-                exp_relative_diff = exp(-1.*ds_pre_diff(i,1)); %*exp_related_Box_dis;
+                exp_R = exp(-1.*ds_pre_diff(i,1)); %*exp_c_xy_j;
 
-               [row,col] = size(x_q_feat_ds_all);    
+               [row,col] = size(C_j_nn);    
 
                box_var_db = [];
 
@@ -201,7 +201,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                         %
 
 
-                        related_Box_dis = x_q_feat_ds_all(jjj,iii);   % 51X51
+                        c_xy_j = C_j_nn(jjj,iii);   % 51X51
 
 
                         related_Box_db = iii;
@@ -216,35 +216,35 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                         q_width_height = (bb_q(1,3)*bb_q(1,4))/(q_size);
                         db_width_height = (bb_db(1,3)*bb_db(1,4))/(db_size);
 
-                        exp_q_width_height = exp(-1.*(1-q_width_height));
-                        exp_db_width_height = exp(-1.*(1-db_width_height));
+                        exp_P_b_q = exp(-1.*(1-q_width_height));
+                        exp_P_b_c = exp(-1.*(1-db_width_height));
 
 
-                        sum_distance = ds_pre(1,1)+related_Box_dis;
-                        exp_sum_distance = exp(-1.*sum_distance); %*exp_related_Box_dis;
+                        dc_Cxy_j = ds_pre(1,1)+c_xy_j;
+                        exp_dc_Cxy_j = exp(-1.*dc_Cxy_j); %*exp_c_xy_j;
 
-                        ds_all_box(related_Box_q,related_Box_db) = 10*exp_relative_diff*exp_sum_distance*exp_q_width_height*exp_db_width_height;
+                        S_XY(related_Box_q,related_Box_db) = 10*exp_R*exp_dc_Cxy_j*exp_P_b_q*exp_P_b_c;
 
                     end
                end
 
 
-               ds_all_box_sorted = zeros(num_box,num_box);
-               S_less_Nr_sorted = zeros(num_box,num_box);
+               S_XY_sorted = zeros(num_box,num_box);
+               C_j_nn_Nr_sorted = zeros(num_box,num_box);
 
                for jj = 1: num_box
                    for ii = 1 : num_box
-                        ii_index = ds_all_sort_index(ii,jj);
-                        ds_all_box_sorted(ii,jj) = ds_all_box(ii_index+1,jj); %51*51
-                        ds_all_less_sorted(ii,jj) = ds_all_less(ii_index+1,jj);
-                        S_less_sorted(ii,jj) = S_less(ii_index+1,jj);
+                        ii_index = C_n_n_sort_index(ii,jj);
+                        S_XY_sorted(ii,jj) = S_XY(ii_index+1,jj); %51*51
+                        C_j_f_sorted(ii,jj) = C_j_f(ii_index+1,jj);
+                        C_j_nn_sorted(ii,jj) = C_j_nn(ii_index+1,jj);
                    end
                end
 
-               ds_all_s_less = ds_all_box_sorted.*ds_all_less_sorted; 
+               P_j_S_C = S_XY_sorted.*C_j_f_sorted; 
 
 
-                S1 = S_less_sorted; 
+                S1 = C_j_nn_sorted; 
                 S1_mean = sum(S1(:))/nnz(S1);
                 S1(S1>S1_mean) = 0;
                 S2 = S1; 
@@ -256,32 +256,32 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
 
 
                 S1_logical = logical(S1);
-                ds_all_s_less_s1_sub = ds_all_s_less(1:Top_boxes,1:Top_boxes);
+                P_j_SC = P_j_S_C(1:Top_boxes,1:Top_boxes);
 
-                min_ds_all = S_less_sorted(1:Top_boxes,1:Top_boxes);
-                if (nnz(min_ds_all) > 0)
-                    min_ds_all = min(min_ds_all(min_ds_all > 0));
+                min_C_n_n = S_less_sorted(1:Top_boxes,1:Top_boxes);
+                if (nnz(min_C_n_n) > 0)
+                    min_C_n_n = min(min_C_n_n(min_C_n_n > 0));
                 else
-                    min_ds_all = 0;
+                    min_C_n_n = 0;
                 end
-                prob_ds_pre_sum = exp_ds_pre(i,1)/exp_ds_pre_sum;
-                prob_ds_pre_sum = exp(-1*min_ds_all)*prob_ds_pre_sum;
+                P_j_SM = exp_ds_pre(i,1)/exp_ds_pre_sum;
+                P_j_SM = exp(-1*min_C_n_n)*P_j_SM;
 
-                m_mat = prob_ds_pre_sum*ds_all_s_less_s1_sub;
-                mean_min_top = exp(-1.*mean(x_q_feat_ds_all(1,1:10))); 
+                m_j_mat = P_j_SM*P_j_SC;
+                mean_min_top = exp(-1.*mean(C_j_nn(1,1:10))); 
 
 
-                crf_h = [current_diff x_q_feat_ds_all(1,1:10)];%double(m_ds_all(1,:));
-                crf_X = m_mat;%double(m_ds_all(2:11,:));
-                crf_pre = ds_pre(i,1);
+                crf_C_qc = [current_diff C_j_nn(1,1:10)];%double(m_C_n_n(1,:));
+                crf_M_j = m_j_mat;%double(m_C_n_n(2:11,:));
+                d_c_j = ds_pre(i,1);
            end
            if ~(m_config.create_Model)
                
                if ~q_data_test_exist
 
-                   XX = crf_X';
-                   XX = reshape(XX,1,[]);
-                   m_pridict = [crf_pre crf_h XX];
+                   M_j = crf_M_j';
+                   M_j = reshape(M_j,1,[]);
+                   m_pridict = [d_c_j crf_C_qc M_j];
                    
                    D_diff_predict_50 = predict(g_mdl.mdls{1},m_pridict);
                    D_diff_predict_100 = predict(g_mdl.mdls{2},m_pridict);
@@ -299,10 +299,10 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
        
                  
                m_table = [];
-               ds_all = [];
+               C_n_n = [];
            else
                  crf_y = int8(gt_top(i,1))+1;         %  for PARIS
-                 crf_data = struct ('Y', crf_y,'H', crf_h,'X', crf_X, 'pre', crf_pre); 
+                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_j); 
                  data(:,i+((iTestSample-1)*100)) = crf_data;
            end
         
