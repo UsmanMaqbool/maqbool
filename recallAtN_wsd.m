@@ -220,10 +220,10 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                         exp_P_b_c = exp(-1.*(1-db_width_height));
 
 
-                        dc_Cxy_j = ds_pre(1,1)+c_xy_j;
-                        exp_dc_Cxy_j = exp(-1.*dc_Cxy_j); %*exp_c_xy_j;
+                        d_xy_j = ds_pre(1,1)+c_xy_j;
+                        exp_d_xy_j = exp(-1.*d_xy_j); %*exp_c_xy_j;
 
-                        S_XY(related_Box_q,related_Box_db) = 10*exp_R*exp_dc_Cxy_j*exp_P_b_q*exp_P_b_c;
+                        S_XY(related_Box_q,related_Box_db) = 10*exp_R*exp_d_xy_j*exp_P_b_q*exp_P_b_c;
 
                     end
                end
