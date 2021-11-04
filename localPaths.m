@@ -2,7 +2,7 @@ function paths= localPaths()
     
     % HK
     datasets_directory = '/mnt/0287D1936157598A/docker_ws/maqbool/maqbool-datasets/';    
-    paths.m_directory = '/mnt/0287D1936157598A/docker_ws/maqbool/maqbool-data/'; % Save MAQBOOL files
+    paths.m_directory = '/home/leo/mega/maqbool-data/'; % Save MAQBOOL files
 
     % --- dependencies
     

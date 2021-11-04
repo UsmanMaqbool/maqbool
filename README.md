@@ -52,6 +52,7 @@ Download the databases file (tokyo247.mat) and set the correct dsetSpecDir in lo
 
 #### Edge Boxes
 ```
+cd maqbool/3rd-party-support
 git clone https://github.com/zchrissirhcz/edges
 ```
 Not official edges, but fixed error for matlab > 2017
@@ -63,6 +64,7 @@ run linux_startup.m
 
 #### Edge Boxes Toolbox
 ```
+cd maqbool/3rd-party-support
 git clone https://github.com/zchrissirhcz/toolbox.git
 ```
 ```matlab
@@ -72,6 +74,7 @@ run linux_startup.m
 
 #### Matconvnet
 ```
+cd maqbool/3rd-party-support
 git clone https://github.com/vlfeat/matconvnet.git
 ```
 [Ful Instuctions to install matconvnet](https://www.vlfeat.org/matconvnet/install/)
@@ -84,6 +87,9 @@ cd 3rd-party-support/matconvnet
 addpath matlab 
 vl_compilenn('enableGpu', true)
 ```
+
+## Install Cuda 
+check cuda toolkit according to your matlab version [ref](https://www.mathworks.com/help/parallel-computing/gpu-support-by-release.html)
 
 **Possible Errors:
 **
