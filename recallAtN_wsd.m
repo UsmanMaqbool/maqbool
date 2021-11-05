@@ -323,9 +323,27 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                numReturned= length(ids);
                assert(numReturned<=nTop); % if your searcher returns fewer, it's your fault
                
-               gt_top = logical(isPos(iTest, ids_new));
-
-               thisRecall= cumsum( isPos(iTest, ids_new) ) > 0; % yahan se get karta hai %db.cp (close position)
+%               gt_top = logical(isPos(iTest, ids_new));
+               if(m_config.test_on == 'oxford')
+                    isIgnore= ismember(ids_new, db.ignoreIDs{iTestSample});
+                    ids_new= ids_new(~isIgnore);
+                   % making 100 total
+                   if size(ids_new,1) < total_top
+                      differnce_ids =  total_top-size(ids_new,1);
+                       for ids_i = 1:differnce_ids
+                           ids_new = [ids_new ;ids_new(ids_i,1)];
+                           ds_pre = [ds_pre ;ds_pre(ids_i,1)];
+                       end
+                   end
+                    isPos= ismember(ids_new', db.posIDs{iTestSample});
+                    gt_top = isPos';
+                    thisRecall= cumsum(isPos') > 0; % yahan se get karta hai %db.cp (close position)
+               else
+                    gt_top = isPos(iTest, ids_new);
+                    thisRecall= cumsum( isPos(iTest, ids_new) ) > 0; % yahan se get karta hai %db.cp (close position)    
+               end
+               
+               
                if j == 1
                     recalls(iTestSample, :)= thisRecall( min(ns, numReturned) );
                else
@@ -340,7 +358,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
            allrecalls_pslen= recalls_m;
            allrecalls_m= [mean(allrecalls_pslen(:,:,1),1 )' mean(allrecalls_pslen(:,:,2),1 )'];
            
-           if show_output && display_thumb(1,2) ~= 1 && display_thumb(1,6) == 1
+           if show_output % && display_thumb(1,2) ~= 1 && display_thumb(1,6) == 1
               
                for j = 1:5
                     %netvlad = imread(netvlat_img(j,1));

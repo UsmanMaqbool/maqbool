@@ -36,7 +36,7 @@ function paths= localPaths()
 
     paths.dsetRootTokyo247= strcat(datasets_directory,'Test_247_Tokyo_GSV/'); % should contain images/ and query/
 
-    paths.dsetRootOxford= strcat(datasets_directory,'test_oxford/'); % should contain images/ and groundtruth/, and be writable
+    paths.dsetRootOxford= strcat(datasets_directory,'oxbuild_images/'); % should contain images/ and groundtruth/, and be writable
       
     paths.dsetRootParis= strcat(datasets_directory,'test_paris/'); % should contain images/ (with subfolders defense, eiffel, etc), groundtruth/ and corrupt.txt, and be writable
    

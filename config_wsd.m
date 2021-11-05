@@ -7,11 +7,17 @@ function m_opts= config_wsd(paths)
     
     show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
     proj = 'm'; 
+    % Select feature dimension
     f_dimension = 512;   % '512' or '4096'
+    
     pre_net = 'vd16';
-    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' (pre-trained model)
-    job_net = strcat(pre_net,'_',net_dataset); 
-    job_datasets = 'pitts30k';  %'pitts30k' , 'tokyo247' (Test on)
+    
+    % Select pre-trained model
+    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' ()
+    job_net = strcat(pre_net,'_',net_dataset);
+    
+    % Test model on
+    test_on = 'oxford';  %'pitts30k' , 'tokyo247' , 'oxford'
     
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
     m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
@@ -35,30 +41,35 @@ function m_opts= config_wsd(paths)
         netID= 'vd16_tokyoTM_conv5_3_vlad_preL2_intra_white';
     end
 
-    if strcmp(job_datasets,'pitts30k')
+    if strcmp(test_on,'pitts30k')
         dbTest= dbPitts('30k','test');
         datasets_path =  paths.dsetRootPitts;
         query_folder = 'queries';
-    elseif strcmp(job_datasets,'tokyo247')
+    elseif strcmp(test_on,'tokyo247')
         dbTest= dbTokyo247();
         datasets_path = paths.dsetRootTokyo247; 
         query_folder = 'query';
+    elseif strcmp(test_on,'oxford')
+        dbTest= dbVGG();
+        datasets_path = paths.dsetRootOxford; 
+        query_folder = 'images';
+   % dbHolidays
     end
     
-    save_path = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension),'_',proj);
+    save_path = strcat(m_directory,job_net,'_to_',test_on,'_',int2str(f_dimension),'_',proj);
     save_m_on = strcat(m_directory,job_net,'_to_',m_on,'_',int2str(f_dimension),'_',proj);
     save_m_data = strcat(m_directory,'models/',job_net,'_to_',m_on,'_',int2str(f_dimension),'_data.mat');
     save_m_data_mdl = strcat(m_directory,'models/', job_net,'_to_',m_on,'_',int2str(f_dimension),'_mdls.mat');
-    save_m_data_test = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension));
+    save_m_data_test = strcat(m_directory,'data_test/',job_net,'_to_',test_on,'_',int2str(f_dimension));
 
-    save_path_all = strcat(m_directory,job_net,'_to_',job_datasets,'_box_50_plus','.mat');
+    save_path_all = strcat(m_directory,job_net,'_to_',test_on,'_box_50_plus','.mat');
         
     % Save result for tikz latex
-    m_results_50_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_DT_50_',int2str(f_dimension),'.dat');
-    m_results_100_fname = strcat('results/',job_net,'_to_',job_datasets,'_maqbool_DT_100_',int2str(f_dimension),'.dat');
-    netvlad_results_fname = strcat('results/',job_net,'_to_',job_datasets,'_netvlad_',int2str(f_dimension),'.dat');
-    save_results = strcat('results/',job_net,'_to_',job_datasets,'_both_results_',int2str(f_dimension),'.mat');
-    plot_title = strcat(job_net,'_to_',job_datasets,'_',int2str(f_dimension));
+    m_results_50_fname = strcat('results/',job_net,'_to_',test_on,'_maqbool_DT_50_',int2str(f_dimension),'.dat');
+    m_results_100_fname = strcat('results/',job_net,'_to_',test_on,'_maqbool_DT_100_',int2str(f_dimension),'.dat');
+    netvlad_results_fname = strcat('results/',job_net,'_to_',test_on,'_netvlad_',int2str(f_dimension),'.dat');
+    save_results = strcat('results/',job_net,'_to_',test_on,'_both_results_',int2str(f_dimension),'.mat');
+    plot_title = strcat(job_net,'_to_',test_on,'_',int2str(f_dimension));
 
     %%
     m_opts = struct(...
@@ -66,6 +77,7 @@ function m_opts= config_wsd(paths)
                 'netID',                    netID, ...
                 'proj',                     proj, ...
                 'job_net',                  job_net, ...
+                'test_on',             test_on, ...
                 'datasets_path',            datasets_path, ...
                 'plot_title',               plot_title, ...
                 'save_path',                save_path, ...
