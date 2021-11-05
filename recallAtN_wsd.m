@@ -77,7 +77,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
 
         else
             %if you dont want to compute, you can download from NETVLAD's project page.
-            print_level_wsd(m_config.save_m_data_test,3); % Download pre-computed files    
+             % print_level_wsd(m_config.save_m_data_test,3); % Download pre-computed files    
             q_data_test_exist = false;
         end
             iTest= toTest(iTestSample);
@@ -124,7 +124,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                  x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
             else
                 %if you dont want to compute, you can download from NETVLAD's project page.
-                print_level_wsd(zip_folder,4); % Download pre-computed files    
+               %  print_level_wsd(zip_folder,4); % Download pre-computed files    
                 q_feat = estimate_box_features_wsd(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
                 x_q_feat = load(q_feat);
 
@@ -258,7 +258,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                 S1_logical = logical(S1);
                 P_j_SC = P_j_S_C(1:Top_boxes,1:Top_boxes);
 
-                min_C_n_n = S_less_sorted(1:Top_boxes,1:Top_boxes);
+                min_C_n_n = C_j_nn_sorted(1:Top_boxes,1:Top_boxes);
                 if (nnz(min_C_n_n) > 0)
                     min_C_n_n = min(min_C_n_n(min_C_n_n > 0));
                 else

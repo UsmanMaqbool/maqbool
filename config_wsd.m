@@ -5,7 +5,7 @@ function m_opts= config_wsd(paths)
     iTestSample_Start= 1; % Testing Images Index
     startfrom = 1;        % NetVLAD recall images index  
     
-    show_output = 1;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
+    show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
     proj = 'm'; 
     f_dimension = 512;   % '512' or '4096'
     pre_net = 'vd16';
@@ -49,7 +49,7 @@ function m_opts= config_wsd(paths)
     save_m_on = strcat(m_directory,job_net,'_to_',m_on,'_',int2str(f_dimension),'_',proj);
     save_m_data = strcat(m_directory,'models/',job_net,'_to_',m_on,'_',int2str(f_dimension),'_data.mat');
     save_m_data_mdl = strcat(m_directory,'models/', job_net,'_to_',m_on,'_',int2str(f_dimension),'_mdls.mat');
-    save_m_data_test = strcat(m_directory,'data_test/',job_net,'_to_',job_datasets,'_',int2str(f_dimension));
+    save_m_data_test = strcat(m_directory,job_net,'_to_',job_datasets,'_',int2str(f_dimension));
 
     save_path_all = strcat(m_directory,job_net,'_to_',job_datasets,'_box_50_plus','.mat');
         

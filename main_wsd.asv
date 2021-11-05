@@ -15,7 +15,7 @@ load( sprintf('%s%s.mat', paths.ourCNNs, netID), 'net' );
  if ~exist(m_config.save_m_data_mdl, 'file')
     if ~exist(m_config.save_m_data, 'file')
         %if you dont want to compute, you can download from why-so-deep's project page.
-        print_level_wsd(m_config.save_m_data,1); % Download pre-computed files
+        % print_level_wsd(m_config.save_m_data,1); % Download pre-computed files
 
         m_config.create_Model = true;
 

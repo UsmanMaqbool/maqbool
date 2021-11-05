@@ -1,7 +1,12 @@
+%% Taken from NetVLAD and Updated by Usman
+%  datasets_directory (Main directory of all the datasets)
+%  paths.m_directory  (Pre-computed MAQBOOL data)
+
+%%
 function paths= localPaths()
     
-    % HK
-    datasets_directory = '/mnt/0287D1936157598A/docker_ws/maqbool/maqbool-datasets/';    
+    % Give Path
+    datasets_directory = '/mnt/ssd/usman_ws/datasets/maqbool-datasets/datasets-place-recognition/';    
     paths.m_directory = '/home/leo/mega/maqbool-data/'; % Save MAQBOOL files
 
     % --- dependencies
@@ -23,7 +28,7 @@ function paths= localPaths()
 
     % --- dataset locations
 
-    paths.dsetRootPitts= strcat(datasets_directory,'Test_Pitts30k/'); % should contain images/ and queries/
+    paths.dsetRootPitts= strcat(datasets_directory,'Test_Pitts250k/'); % should contain images/ and queries/
 
     paths.dsetRootTokyo247= strcat(datasets_directory,'Test_247_Tokyo_GSV/'); % should contain images/ and query/
 
