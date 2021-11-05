@@ -17,7 +17,7 @@ function m_opts= config_wsd(paths)
     job_net = strcat(pre_net,'_',net_dataset);
     
     % Test model on
-    test_on = 'oxford';  %'pitts30k' , 'tokyo247' , 'oxford'
+    test_on = 'oxford';  %'pitts30k' , 'tokyo247' , 'oxford', 'holidays', 'paris'
     
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
     m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
@@ -50,10 +50,18 @@ function m_opts= config_wsd(paths)
         datasets_path = paths.dsetRootTokyo247; 
         query_folder = 'query';
     elseif strcmp(test_on,'oxford')
-        dbTest= dbVGG();
+        dbTest= dbVGG('ox5k');
         datasets_path = paths.dsetRootOxford; 
         query_folder = 'images';
-   % dbHolidays
+    elseif strcmp(test_on,'paris')
+
+        dbTest= dbVGG('paris');
+        datasets_path = paths.dsetRootParis; 
+        query_folder = 'images';
+    elseif strcmp(test_on,'holidays')
+        dbTest= dbHolidays();
+        datasets_path = paths.dsetRootHolidays; 
+        query_folder = 'jpg';    
     end
     
     save_path = strcat(m_directory,job_net,'_to_',test_on,'_',int2str(f_dimension),'_',proj);
@@ -77,7 +85,7 @@ function m_opts= config_wsd(paths)
                 'netID',                    netID, ...
                 'proj',                     proj, ...
                 'job_net',                  job_net, ...
-                'test_on',             test_on, ...
+                'test_on',                  test_on, ...
                 'datasets_path',            datasets_path, ...
                 'plot_title',               plot_title, ...
                 'save_path',                save_path, ...
