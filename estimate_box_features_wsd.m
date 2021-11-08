@@ -25,7 +25,7 @@ for jj = 1:size(ids,1)
 
         ds_all_full = [];
 
-        db_img = strcat(dataset_path,'images/', db.dbImageFns{ids(jj,1),1})  ;
+        db_img = strcat(dataset_path, '/',db.dbImageFns{ids(jj,1),1})  ;
         im= vl_imreadjpeg({char(db_img)},'numThreads', 12); 
         I = uint8(im{1,1});
         bbox_all =edgeBoxes(I,model); % ~ -> Edge (not required)
