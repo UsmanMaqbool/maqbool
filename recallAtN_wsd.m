@@ -22,7 +22,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     iTestSample_Start=m_config.iTestSample_Start; 
     startfrom =m_config.startfrom; 
     show_output = m_config.show_output;  %test the boxes
-    dataset_path = m_config.datasets_path; 
+    dataset_path = strcat(m_config.datasets_path,m_config.query_folder); 
     save_path = m_config.save_path; 
     save_m_on = m_config.save_m_on;
     m_limit = m_config.m_limit;
@@ -101,7 +101,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
 
             %% Leo START
 
-            qimg_path = strcat(dataset_path,m_config.query_folder, '/', db.qImageFns{iTestSample, 1});  
+            qimg_path = strcat(dataset_path, '/', db.qImageFns{iTestSample, 1});  
 
             if show_output
                 qq_img = imread(qimg_path);
@@ -324,7 +324,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                assert(numReturned<=nTop); % if your searcher returns fewer, it's your fault
                
 %               gt_top = logical(isPos(iTest, ids_new));
-               if(m_config.test_on == 'oxford')
+               if(strcmp(m_config.test_on,'oxford') || strcmp(m_config.test_on,'holidays') || strcmp(m_config.test_on,'paris'))
                     isIgnore= ismember(ids_new, db.ignoreIDs{iTestSample});
                     ids_new= ids_new(~isIgnore);
                    % making 100 total
@@ -362,7 +362,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
               
                for j = 1:5
                     %netvlad = imread(netvlat_img(j,1));
-                    netvlad = imread(strcat(dataset_path,'images/',db.dbImageFns{display_thumb(j,1),1}));
+                    netvlad = imread(strcat(dataset_path,db.dbImageFns{display_thumb(j,1),1}));
 
                     if(display_thumb(j,2) == 1)
                         image_n = addborder(netvlad, 10, [0,255,0], 'outer'); 
