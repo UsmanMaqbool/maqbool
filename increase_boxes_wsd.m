@@ -20,7 +20,7 @@ function mat_boxes = increase_boxes_wsd(bbx,hyt,wyd)
     end
     
     mat_boxes = uint8(bbox/16); 
-        fprintf( '=> %i', length(mat_boxes));
+       % fprintf( '=> %i', length(mat_boxes));
         %size(mat_boxes) (if boxes are less then 50 -> create empty boxes
         while (size(mat_boxes) < 50)
             mat_boxes_add = [0 0 wyd/16-1 hyt/16-1 0]; 

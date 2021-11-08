@@ -20,7 +20,7 @@ k = num_box;
 
 
 % Top 100 sample
-
+fprintf( '%i ~ ',iTestSample);
 for jj = 1:size(ids,1)
 
         ds_all_full = [];
@@ -41,7 +41,7 @@ for jj = 1:size(ids,1)
 
         db_bbox_file(jj) = struct ('bboxdb', db_bbox); 
 
-        fprintf( '==>> %i ~ %i/%i ',iTestSample,jj,total_top );
+        fprintf( '%i.',jj);
 
 
         for j = 1:num_box+1
@@ -56,7 +56,7 @@ for jj = 1:size(ids,1)
 
 
 end
-
+fprintf('\n')
 % save the files
 check_folder = fileparts(q_feat);
 if ~exist(check_folder, 'dir')
