@@ -22,7 +22,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     iTestSample_Start=m_config.iTestSample_Start; 
     startfrom =m_config.startfrom; 
     show_output = m_config.show_output;  %test the boxes
-    dataset_path = strcat(m_config.datasets_path,m_config.query_folder); 
+    dataset_path = strcat(m_config.datasets_path); 
     save_path = m_config.save_path; 
     save_m_on = m_config.save_m_on;
     m_limit = m_config.m_limit;
@@ -101,7 +101,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
 
             %% Leo START
 
-            qimg_path = strcat(dataset_path, '/', db.qImageFns{iTestSample, 1});  
+            qimg_path = strcat(dataset_path,'/',m_config.query_folder,'/',db.qImageFns{iTestSample, 1});  
 
             if show_output
                 qq_img = imread(qimg_path);
@@ -362,7 +362,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
               
                for j = 1:5
                     %netvlad = imread(netvlat_img(j,1));
-                    netvlad = imread(strcat(dataset_path,db.dbImageFns{display_thumb(j,1),1}));
+                    netvlad = imread(strcat(dataset_path,'/',m_config.image_folder,'/',db.dbImageFns{display_thumb(j,1),1}));
 
                     if(display_thumb(j,2) == 1)
                         image_n = addborder(netvlad, 10, [0,255,0], 'outer'); 
@@ -377,7 +377,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                     'FontSize',10,...
                     'backgroundcolor','w');
 
-                    maqbool = imread(strcat(dataset_path,'images/', db.dbImageFns{display_thumb(j,5),1}));
+                    maqbool = imread(strcat(dataset_path,'/',m_config.image_folder,'/',db.dbImageFns{display_thumb(j,5),1}));
                     if(display_thumb(j,6) == 1)
                         image_m = addborder(maqbool, 10, [0,255,0], 'outer'); 
                     else
