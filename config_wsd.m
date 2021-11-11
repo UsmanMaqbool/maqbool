@@ -5,7 +5,7 @@ function m_opts= config_wsd(paths)
     iTestSample_Start= 1; % Testing Images Index
     startfrom = 1;        % NetVLAD recall images index  
     
-    show_output = 1;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
+    show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
     proj = 'm'; 
     % Select feature dimension
     f_dimension = 512;   % '512' or '4096'
@@ -17,7 +17,7 @@ function m_opts= config_wsd(paths)
     job_net = strcat(pre_net,'_',net_dataset);
     
     % Test model on
-    test_on = 'tokyo247';  %'pitts30k' , 'tokyo247' , 'oxford', 'paris'
+    test_on = 'oxford';  %'pitts30k' , 'tokyo247' , 'oxford', 'paris'
     
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
     m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
@@ -55,10 +55,12 @@ function m_opts= config_wsd(paths)
         dbTest= dbVGG('ox5k');
         datasets_path = paths.dsetRootOxford; 
         query_folder = 'images';
+        image_folder = 'images';
     elseif strcmp(test_on,'paris')
         dbTest= dbVGG('paris');
         datasets_path = paths.dsetRootParis; 
         query_folder = 'images';
+        image_folder = 'images';
     end
     
     save_path = strcat(m_directory,job_net,'_to_',test_on,'_',int2str(f_dimension),'_',proj);
