@@ -2,13 +2,10 @@ function m_opts= config_wsd(paths)
     
     % Controlling parameters
 
-    iTestSample_Start= 1; % Testing Images Index
-    startfrom = 1;        % NetVLAD recall images index  
-    
-    show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
+    show_output = 1;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
     proj = 'm'; 
     % Select feature dimension
-    f_dimension = 4096;   % '512' or '4096'
+    f_dimension = 512;   % '512' or '4096'
     
     pre_net = 'vd16';
     
@@ -77,6 +74,9 @@ function m_opts= config_wsd(paths)
     netvlad_results_fname = strcat('results/',job_net,'_to_',test_on,'_netvlad_',int2str(f_dimension),'.dat');
     save_results = strcat('results/',job_net,'_to_',test_on,'_both_results_',int2str(f_dimension),'.mat');
     plot_title = strcat(job_net,'_to_',test_on,'_',int2str(f_dimension));
+        
+    iTestSample_Start= 1; % Testing Images Index
+    startfrom = 1;        % NetVLAD recall images index  
 
     %%
     m_opts = struct(...
