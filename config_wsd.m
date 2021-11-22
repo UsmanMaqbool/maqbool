@@ -14,7 +14,7 @@ function m_opts= config_wsd(paths)
     job_net = strcat(pre_net,'_',net_dataset);
     
     % Test model on
-    test_on = 'tokyo247';  %'pitts30k' , 'tokyo247' , 'oxford', 'paris'
+    test_on = 'paris';  %'pitts30k' , 'tokyo247' , 'oxford', 'paris'
     
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
     m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
@@ -49,7 +49,25 @@ function m_opts= config_wsd(paths)
         image_folder = 'images';
         query_folder = 'query';
     elseif strcmp(test_on,'oxford')
-        dbTest= dbVGG('ox5k');
+        dsetName= 'ox5k';
+        useROI= false;
+        if useROI
+            lastConvLayer= find(ismember(relja_layerTypes(net), 'custom'),1)-1; % Relies on the fact that NetVLAD, Max and Avg pooling are implemented as a custom layer and are the first custom layer in the network. Change if you use another network which has other custom layers before
+            netBottom= net;
+            netBottom.layers= netBottom.layers(1:lastConvLayer);
+            info= vl_simplenn_display(netBottom);
+            clear netBottom;
+            recFieldSize= info.receptiveFieldSize(:, end);
+            assert(recFieldSize(1) == recFieldSize(2));% we are assuming square receptive fields, otherwise dbVGG needs to change to account for non-square
+            recFieldSize= recFieldSize(1);
+            strMode= 'crop';
+        else
+            recFieldSize= -1;
+            strMode= 'full';
+        end
+
+        dbTest= dbVGG(dsetName, recFieldSize);
+        %dbTest= dbVGG('ox5k');
         datasets_path = paths.dsetRootOxford; 
         query_folder = 'images';
         image_folder = 'images';

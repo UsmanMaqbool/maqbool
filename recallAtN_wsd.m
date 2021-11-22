@@ -27,7 +27,8 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     save_m_on = m_config.save_m_on;
     m_limit = m_config.m_limit;
     m_alpha = m_config.m_alpha;
-    
+    APs= zeros(db.numQueries, 1);
+    APs_real= zeros(db.numQueries, 1);
     evalProg= tic;
     
     
@@ -82,6 +83,8 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
         end
             iTest= toTest(iTestSample);
             [ids, ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
+            
+           % [ids, ~]= yael_nn(db.qImageFns, db.qImageFns(:,iTest), size(db.qImageFns, 2));
             ds = ds_pre - min(ds_pre(:));
 
          
@@ -301,7 +304,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                m_table = [];
                C_n_n = [];
            else
-                 crf_y = int8(gt_top(i,1))+1;         %  for PARIS
+                  crf_y = int8(gt_top(i,1))+1;         %  for PARIS
                  crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_j); 
                  data(:,i+((iTestSample-1)*100)) = crf_data;
            end
@@ -325,8 +328,8 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                
 %               gt_top = logical(isPos(iTest, ids_new));
                if(strcmp(m_config.test_on,'oxford') || strcmp(m_config.test_on,'holidays') || strcmp(m_config.test_on,'paris'))
-                    isIgnore= ismember(ids_new, db.ignoreIDs{iTestSample});
-                    ids_new= ids_new(~isIgnore);
+                   isIgnore= ismember(ids_new, db.ignoreIDs{iTestSample});
+                   ids_new= ids_new(~isIgnore);
                    % making 100 total
                    if size(ids_new,1) < total_top
                       differnce_ids =  total_top-size(ids_new,1);
@@ -337,7 +340,37 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                    end
                     isPos= ismember(ids_new', db.posIDs{iTestSample});
                     gt_top = isPos';
-                    thisRecall= cumsum(isPos') > 0; % yahan se get karta hai %db.cp (close position)
+                   % thisRecall= cumsum(isPos') > 0; % yahan se get karta hai %db.cp (close position)
+                  
+                   %isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
+                   %ids= ids(~isIgnore);
+                   % isPos= ismember(ids', db.posIDs{iQuery});
+                   prec= cumsum(isPos)./[1:length(ids_new)];
+                   thisRecall= cumsum(isPos)/length(db.posIDs{iTestSample});
+                   APs(iTestSample)= diff([0, thisRecall]) * ( [1, prec(1:(end-1))]+prec )' /2;
+                   
+%                    isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
+%                    ids_real= ids(~isIgnore);
+%                    % making 100 total
+%                    if size(ids_real,1) < total_top
+%                       differnce_ids =  total_top-size(ids_real,1);
+%                        for ids_i = 1:differnce_ids
+%                            ids_real = [ids_real ;ids_real(ids_i,1)];
+%                           
+%                        end
+%                    end
+%                     isPos= ismember(ids_real', db.posIDs{iTestSample});
+%                     gt_top = isPos';
+%                    % thisRecall= cumsum(isPos') > 0; % yahan se get karta hai %db.cp (close position)
+%                   
+%                    %isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
+%                    %ids= ids(~isIgnore);
+%                    % isPos= ismember(ids', db.posIDs{iQuery});
+%                    prec_real= cumsum(isPos)./[1:length(ids_real)];
+%                    thisRecall_real= cumsum(isPos)/length(db.posIDs{iTestSample});
+%                    APs_real(iTestSample)= diff([0, thisRecall]) * ( [1, prec(1:(end-1))]+prec )' /2;
+                   
+                    
                else
                     gt_top = isPos(iTest, ids_new);
                     thisRecall= cumsum( isPos(iTest, ids_new) ) > 0; % yahan se get karta hai %db.cp (close position)    
@@ -418,6 +451,13 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     
     t= toc(evalProg);
 
+    mAP= mean(APs);
+    relja_display( '%.4f', mAP );
+    
+    mAP_real= mean(APs_real);
+    relja_display( '%.4f', mAP_real );
+    
+    
     if (m_config.create_Model)
         save(m_config.save_m_data,'data');
         res = [];

@@ -76,7 +76,8 @@ m_config.create_Model = false;
 % Use m model
 [recalll, ~,recall,allrecalls_m, opts]= testFromFn_wsd(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
 
-
+%[recall, ~, ~, opts]= testFromFn(dbTest, dbFeatFn, qFeatFn);
+%plot(opts.recallNs, recall, 'ro-'); grid on; xlabel('N'); ylabel('Recall@N');
 %% Results
 
 netvlad_results = [opts.recallNs',recall*100];
