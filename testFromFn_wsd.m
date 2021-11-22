@@ -21,15 +21,6 @@ function [recall, rankloss, allRecalls, allrecalls_m, opts]= m_testFromFn(db, db
     dbFeat= fread( fopen(dbFeatFn, 'rb'), [nDims, db.numImages], 'float32=>single');
     assert(size(dbFeat,2)==db.numImages);
     
-   
-   %%% Oxford reading
-  %  dbFeat= fread( fopen(dbFeatFn, 'rb'), inf, 'float32=>single');
- %   dbFeat= reshape(dbFeat, [], db.numImages);
- %   nDims= size(dbFeat, 1);
-  %  qFeat= dbFeat(:, db.queryIDs);
-    
-    
-    
     if isfield(opts, 'cropToDim') && opts.cropToDim>0
         if opts.cropToDim > nDims
             warning('cropToDim (%d) larger than the dimensionality (%d) -- ignoring', opts.cropToDim, nDims);

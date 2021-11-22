@@ -2,33 +2,33 @@ function m_opts= config_wsd(paths)
     
     % Controlling parameters
 
-    show_output = 1;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
-    proj = 'm'; 
     % Select feature dimension
     f_dimension = 512;   % '512' or '4096'
     
     pre_net = 'vd16';
     
     % Select pre-trained model
-    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k' ()
+    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k'
     job_net = strcat(pre_net,'_',net_dataset);
     
     % Test model on
     test_on = 'paris';  %'pitts30k' , 'tokyo247' , 'oxford', 'paris'
     
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
-    m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
     
     m_directory = paths.m_directory; % Save MAQBOOL files
+    
+    %%
+    
+    m_limit = 250; % use ground truth till 250 of `m_on` for creating decision tree
+    show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
+    proj = 'm'; 
     
     if f_dimension == 4096
         m_alpha = 0.31;
     else
         m_alpha = 1.15;
     end
-    
- 
-    %%
 
     if strcmp(job_net,'vd16_pitts30k')
         % PITTSBURGH DATASET
