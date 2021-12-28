@@ -1,9 +1,9 @@
-function print_level_wsd(data_name,d_type)
+function m_print_level(data_name,d_type)
     
     [d_folder, d_name, d_ext]= fileparts(data_name);
     
     if d_type == 1
-        fprintf( 'Note: Pre-computed %s%s file not found. ', d_name,d_ext);
+        fprintf( 'Note: Pre-computed model %s%s file not found. ', d_name,d_ext);
         fprintf( 'You can also download %s%s from <a href="https://usmanmaqbool.github.io/why-so-deep#download-pre-computed-files">project website</a>, \nand extract in %s/.', d_name, d_ext, d_folder);
     elseif d_type == 2
         fprintf( 'Note: Pre-computed %s%s file not found. ', d_name,d_ext);

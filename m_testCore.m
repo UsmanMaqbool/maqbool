@@ -1,4 +1,4 @@
-function [recalls, allRecalls, allrecalls_m]= testCore_wsd(db, qFeat, dbFeat, plen_opts,varargin)
+function [recalls, allRecalls, allrecalls_m]= m_testCore(db, qFeat, dbFeat, plen_opts,varargin)
     opts= struct(...
         'nTestSample', inf, ...
         'recallNs', [1:5, 10:5:100], ...
@@ -12,7 +12,7 @@ function [recalls, allRecalls, allrecalls_m]= testCore_wsd(db, qFeat, dbFeat, pl
     else
         searcherRAW= searcherRAW_;
     end
-    [res, recalls, allrecalls_m]= recallAtN_wsd( searcherRAW, db.numQueries,  @(iQuery, iDb) db.isPosQ(iQuery, iDb), opts.recallNs, opts.printN, opts.nTestSample,db,plen_opts);
+    [res, recalls, allrecalls_m]= m_recallAtN( searcherRAW, db.numQueries,  @(iQuery, iDb) db.isPosQ(iQuery, iDb), opts.recallNs, opts.printN, opts.nTestSample,db,plen_opts);
     
     allRecalls= recalls;
     allRecalls= mean( allRecalls, 1 )';

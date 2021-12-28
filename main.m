@@ -5,17 +5,17 @@ addpath(genpath(pwd));
 setup; 
 
 paths= localPaths();
-m_config = config_wsd(paths);
+m_config = run_config(paths);
 
 netID = m_config.netID;
 load( sprintf('%s%s.mat', paths.ourCNNs, netID), 'net' );
 
 
 %% Check Maqbool model available
- if ~exist(m_config.save_m_data_mdl, 'file')
-    if ~exist(m_config.save_m_data, 'file')
+ if ~exist(m_config.save_mdl, 'file')
+    if ~exist(m_config.save_mdl_pc, 'file')
         %if you dont want to compute, you can download from why-so-deep's project page.
-        print_level_wsd(m_config.save_m_data,1); % Download pre-computed files
+        m_print_level(m_config.save_mdl_pc,1); % Download pre-computed files
 
         m_config.create_Model = true;
 
@@ -42,7 +42,7 @@ load( sprintf('%s%s.mat', paths.ourCNNs, netID), 'net' );
             serialAllFeats(net, dbTest.dbPath, dbTest.dbImageFns, dbFeatFn, 'batchSize', 1); % adjust batchSize depending on your GPU / network size
         end
 
-        testFromFn_wsd(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
+        m_testFromFn(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
     end
     model_wsd(m_config) 
     m_config.create_Model = false;
@@ -74,7 +74,7 @@ end
 m_config.create_Model = false;
 
 % Use m model
-[recalll, ~,recall,allrecalls_m, opts]= testFromFn_wsd(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
+[recalll, ~,recall,allrecalls_m, opts]= m_testFromFn(dbTest, dbFeatFn, qFeatFn, m_config, [], 'cropToDim', m_config.cropToDim);
 
 %[recall, ~, ~, opts]= testFromFn(dbTest, dbFeatFn, qFeatFn);
 %plot(opts.recallNs, recall, 'ro-'); grid on; xlabel('N'); ylabel('Recall@N');

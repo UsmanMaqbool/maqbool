@@ -327,7 +327,7 @@ for i=1:n
     for ii=1:num_box
     res_b1 = res_b{1,ii}(i).x;
     % cropping the spatial information
-    res_b1 = net_box_wsd(i,res(i).x,res_b1,bboxes(ii,:));
+    res_b1 = m_net_box(i,res(i).x,res_b1,bboxes(ii,:));
     res_b{1,ii}(i).x = res_b1(i).x;
     end
   end

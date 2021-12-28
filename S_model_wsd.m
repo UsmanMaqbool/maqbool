@@ -2,7 +2,7 @@ function model_wsd(m_config)
     
     fprintf( 'Creating m Model \n')
 
-    load(m_config.save_m_data,'data');
+    load(m_config.save_mdl_pc,'data');
     
     HH = [];
     for i = 1:size(data,2)
@@ -16,6 +16,6 @@ function model_wsd(m_config)
     Data = array2table(GT);
     mdls{1} = TreeBagger(50,Data,'GT113','Method','regression','OOBPrediction','On');  
     mdls{2} = TreeBagger(100,Data,'GT113','Method','regression', 'OOBPrediction','On');  
-    save(m_config.save_m_data_mdl,'mdls');
+    save(m_config.save_mdl,'mdls');
     fprintf( 'm Model is created. \n')
 end

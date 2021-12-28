@@ -1,3 +1,18 @@
+- Create Model (compute all files)
+  - precomputed-features
+  - models
+  - 
+- projects ki jagah boxes number likh daity hain
+- 50x50 -> 10x10 boxes hoty hain
+- equation verify karni hain
+  
+
+error
+    '/home/leo/mega/maqbool-data/precomputed_files/vd16_pitts30k_to_tokyoTM_512_m/--/--ZV_RB3qZLM-oYAE7jl0w/_200912/--ZV_RB3qZLM-oYAE7jl0w__200912_35.650769_139.703204_090_012.mat'
+
+q_data_test 
+
+
 <h1 align="center">
   <p align="center">MAQBOOL</p>
   <a href="https://usmanmaqbool.github.io/why-so-deep"><img src="https://usmanmaqbool.github.io/assets/images/maqbool/maqbool.png" alt="why-so-deep" style="height: 164px;"></a>
@@ -16,32 +31,21 @@ Documentation is available at [project website](https://usmanmaqbool.github.io/w
 Test
 ## Prerequisite
 
-* Firstly make sure, you have followed [installation](#installation) guide and downloaded [datasets and pre-trained models](#dataset-and-pre-trained-models). 
-* Set correct paths in `localpaths.m` 
-  - `datasets_directory` (Main directory of all the datasets).
-  - `paths.m_directory`  (Pre-computed MAQBOOL data). 
+1. Firstly make sure, you have followed [installation](#installation) guide and downloaded [datasets and pre-trained models](#dataset-and-pre-trained-models). 
+2. Set correct paths in `localpaths.setup`, it is similar to the NetVLAD `localpaths.m`.
+     - `datasets_directory` (Main directory of all the datasets).
+     - `paths.m_directory`  (Pre-computed MAQBOOL data). 
 
-  or you can rename `localPaths.m.setup`->`localPaths.m` in the `maqbool` home directory. Update paths of datasets folders of `datasets_directory`(datasets path) and `m_directory`(to store computed data / checkpoints).
+
+## Training the decision tree model
+
 
 ## Testing on different datasets
-
-Add configuration in the `config_wsd.m` file before testing. For instance, if you want to use model trained on pittsburgh datasets and test on Tokyo datasets at feature dimension 512. So the configuration will be
+Before running the `main.m`, change configuration in the `run_config.m` file. For instance, if you want to use model trained on pittsburgh datasets and test on Tokyo datasets at feature dimension 512. So the configuration will be
 
 `net_dataset = 'pitts30k';` % use `tokyoTM` if you want to use the tokyo based pre-trained model.
-`job_datasets = 'tokyo247';`  % use 'pitts30k' if you want to test on pitts30k.
+`test_on = 'tokyo247';`  % use 'pitts30k' if you want to test on pitts30k.
 `f_dimension = 512;`   % use '4096', if you want to test on 4k feature dimension.
-
-
-Column A | Column B | Column C
----------|----------|---------
- A1 | B1 | C1
- A2 | B2 | C2
- A3 | B3 | C3
-
-
-
-
-* To run the main file, open MATLAB and run `run main_wsd.m`
   
 ### Dataset and Pre-trained Models
 
@@ -111,8 +115,7 @@ vl_compilenn('enableGpu', true)
 ## Install Cuda 
 check cuda toolkit according to your matlab version [ref](https://www.mathworks.com/help/parallel-computing/gpu-support-by-release.html)
 
-**Possible Errors:
-**
+**Possible Errors:**
 - Also you need to disable the `C++11` flag in `.matlab/R2017a/mex_C++_glnxa64.xml` to `C++0x` 
 - if there is NVCC error, try installing Cudatoolkit
 `sudo apt install nvidia-cuda-toolkit`

@@ -1,4 +1,4 @@
-function q_feat = estimate_box_features_wsd(qimg_path, model, db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample)
+function q_feat = m_estimate_box_features(qimg_path, model, db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample)
 
 im= vl_imreadjpeg({char(qimg_path)},'numThreads', 12); 
 
@@ -6,10 +6,10 @@ I = uint8(im{1,1});
 bbox_all =edgeBoxes(I,model);
 [hyt, wyd, ~] = size(im{1,1});
 
-mat_boxes = increase_boxes_wsd(bbox_all,hyt,wyd);
+mat_boxes = m_increase_boxes(bbox_all,hyt,wyd);
 
 im= im{1}; % slightly convoluted because we need the full image path for `vl_imreadjpeg`, while `imread` is not appropriate - see `help computeRepresentation`
-query_full_feat= computeRepresentation_wsd(net, im, mat_boxes,num_box); % add `'useGPU', false` if you want to use the CPU
+query_full_feat= m_computeRepresentation(net, im, mat_boxes,num_box); % add `'useGPU', false` if you want to use the CPU
 
 db_bbox_top = [1 1 wyd hyt 1];
 q_bbox = [db_bbox_top ; double(mat_boxes)*16];
@@ -31,10 +31,10 @@ for jj = 1:size(ids,1)
         bbox_all =edgeBoxes(I,model); % ~ -> Edge (not required)
         [hyt, wyd, ~] = size(im{1,1});   % update the size accordign to the DB images. as images have different sizes. 
 
-        mat_boxes = increase_boxes_wsd(bbox_all,hyt,wyd);
+        mat_boxes = m_increase_boxes(bbox_all,hyt,wyd);
 
         im= im{1}; % slightly convoluted because we need the full image path for `vl_imreadjpeg`, while `imread` is not appropriate - see `help computeRepresentation`
-        feats= computeRepresentation_wsd(net, im, mat_boxes,num_box); % add `'useGPU', false` if you want to use the CPU
+        feats= m_computeRepresentation(net, im, mat_boxes,num_box); % add `'useGPU', false` if you want to use the CPU
         db_bbox_top = [1 1 wyd hyt 1];
         db_bbox = [db_bbox_top ; double(mat_boxes)*16];
         db_bbox = db_bbox (1:num_box+1,:);
@@ -46,7 +46,7 @@ for jj = 1:size(ids,1)
 
         for j = 1:num_box+1
             q1 = single(feats(:,j));  %take column of each box
-            ds1= yael_nn_wsd(query_full_feat, q1, k);
+            ds1= m_yael_nn(query_full_feat, q1, k);
 
             ds_all_full = [ds_all_full ds1'];
         end

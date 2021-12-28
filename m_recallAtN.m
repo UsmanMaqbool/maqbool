@@ -1,4 +1,4 @@
-function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, ns, printN, nSample,db,m_config)
+function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns, printN, nSample,db,m_config)
     if nargin<6, nSample= inf; end
     
     rngState= rng;
@@ -23,8 +23,8 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     startfrom =m_config.startfrom; 
     show_output = m_config.show_output;  %test the boxes
     dataset_path = strcat(m_config.datasets_path); 
-    save_path = m_config.save_path; 
-    save_m_on = m_config.save_m_on;
+    save_pc_files = m_config.save_pc_files; 
+    save_mdl_pc_files = m_config.save_mdl_pc_files;
     m_limit = m_config.m_limit;
     m_alpha = m_config.m_alpha;
     APs= zeros(db.numQueries, 1);
@@ -59,26 +59,34 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     
     %% Load m Model
      if ~(m_config.create_Model)
-        g_mdl =  load(m_config.save_m_data_mdl);
+        g_mdl =  load(m_config.save_mdl);
+        endlenght = length(toTest);
+     else
+         endlenght = 250;
      end
     %% Start
-    for iTestSample= iTestSample_Start:length(toTest)
+    for iTestSample= iTestSample_Start:endlenght
         
         %Display
         relja_progress(iTestSample, ...
                        length(toTest), ...
                        sprintf('%.4f', mean(printRecalls(1:(iTestSample-1)))), evalProg);
         
-        q_data_test = strcat(m_config.save_m_data_test,'/', db.qImageFns{iTestSample, 1});  
+        if m_config.create_Model
+            q_data_test = strcat(m_config.save_mdl_pc_files,'/', db.qImageFns{iTestSample, 1});
+        else
+           
+            q_data_test = strcat(m_config.save_precomputed_files,'/', db.qImageFns{iTestSample, 1});
+        end
         q_data_test = strrep(q_data_test,'.jpg','.mat');
 
         if exist(q_data_test, 'file')
             q_data_test_exist = true;
-            load(q_data_test); % load D_diff_predict_50 and D_diff_predict_100
+         %   load(q_data_test); % load D_diff_pm_configredict_50 and D_diff_predict_100
 
         else
             %if you dont want to compute, you can download from NETVLAD's project page.
-             % print_level_wsd(m_config.save_m_data_test,3); % Download pre-computed files    
+             % print_level_wsd(m_config.save_precomputed_files,3); % Download pre-computed files    
             q_data_test_exist = false;
         end
             iTest= toTest(iTestSample);
@@ -90,15 +98,11 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
          
             % if oxford or otherplace datasets, we can get the recall like this
             if(m_config.create_Model)
-                %working for TokyoTM    
+                %for TokyoTM    
                 gt_top = logical(isPos(iTest, ids));
-
-                q_img = strcat(save_m_on,'/', db.qImageFns{iTestSample, 1});
-                zip_folder = save_m_on;
+                q_img = strcat(save_mdl_pc_files,'/', db.qImageFns{iTestSample, 1});
             else
-
-                q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
-                zip_folder = save_path;
+                q_img = strcat(save_pc_files,'/', db.qImageFns{iTestSample, 1});  
             end
 
 
@@ -127,8 +131,9 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                  x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
             else
                 %if you dont want to compute, you can download from NETVLAD's project page.
-               %  print_level_wsd(zip_folder,4); % Download pre-computed files    
-                q_feat = estimate_box_features_wsd(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
+                %print_level_wsd(zip_folder,4); % Download pre-computed files   
+                dataset_path_full = strcat(dataset_path,'/',m_config.query_folder);
+                q_feat = m_estimate_box_features(qimg_path,model,db,q_feat,net,num_box,total_top,dataset_path_full,ids,iTestSample);
                 x_q_feat = load(q_feat);
 
             end
@@ -271,10 +276,10 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
                 P_j_SM = exp(-1*min_C_n_n)*P_j_SM;
 
                 m_j_mat = P_j_SM*P_j_SC;
-                mean_min_top = exp(-1.*mean(C_j_nn(1,1:10))); 
+                mean_min_top = exp(-1.*mean(C_j_nn(1,1:Top_boxes))); 
 
 
-                crf_C_qc = [current_diff C_j_nn(1,1:10)];%double(m_C_n_n(1,:));
+                crf_C_qc = [current_diff C_j_nn(1,1:Top_boxes)];%double(m_C_n_n(1,:));
                 crf_M_j = m_j_mat;%double(m_C_n_n(2:11,:));
                 d_c_j = ds_pre(i,1);
            end
@@ -459,7 +464,7 @@ function [res, recalls, allrecalls_m]= recallAtN_wsd(searcher, nQueries, isPos, 
     
     
     if (m_config.create_Model)
-        save(m_config.save_m_data,'data');
+        save(m_config.save_mdl_pc,'data');
         res = [];
         fprintf( 'GT data is saved. \n')
     else
