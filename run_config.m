@@ -47,7 +47,7 @@ function m_opts= run_config(paths)
     %%
     m_directory = paths.m_directory; % Save MAQBOOL files
     
-    save_mdl = strcat(m_directory,'models/', job_net,'_to_',m_on,'_',int2str(f_dimension),'_mdls.mat');
+    save_mdl = strcat(m_directory,'models/', job_net,'_to_',m_on,'_',int2str(f_dimension),'_',int2str(proj),'_mdls.mat');
     save_post_computed_mdl = strcat(m_directory,'post_computed_files/',job_net,'_to_',m_on,'_',int2str(f_dimension),'_',int2str(proj),'_data.mat');
     save_pre_computed_mdl = strcat(m_directory,'pre_computed_files/',job_net,'_to_',m_on,'_',int2str(f_dimension),'_',int2str(proj));
     save_pre_computed = strcat(m_directory,'pre_computed_files/',job_net,'_to_',test_on,'_',int2str(f_dimension),'_',int2str(proj));

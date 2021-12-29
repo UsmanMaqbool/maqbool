@@ -15,6 +15,10 @@ function m_model(m_config)
     Data = array2table(GT);
     mdls{1} = TreeBagger(50,Data,'GT113','Method','regression','OOBPrediction','On');  
     mdls{2} = TreeBagger(100,Data,'GT113','Method','regression', 'OOBPrediction','On');  
+    check_folder = fileparts(m_config.save_mdl);
+    if ~exist(check_folder, 'dir')
+       mkdir(check_folder)
+    end
     save(m_config.save_mdl,'mdls');
     fprintf( 'm Model is created. \n')
 end
