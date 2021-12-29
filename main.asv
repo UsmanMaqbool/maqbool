@@ -23,12 +23,8 @@ load( sprintf('%s%s.mat', paths.ourCNNs, netID), 'net' );
             dbTest= dbTokyoTimeMachine('val');
             m_config.datasets_path = paths.dsetRootTokyoTM; 
             m_config.query_folder = 'images'; 
-            m_config.save_pre_computed = m_config.save_pre_computed_mdl;
-    
         end
-        
 
-        
         qFeatFn = sprintf('%s%s_%s_q.bin', paths.outPrefix, netID, dbTest.name);   % just to create the files in the out folder
         dbFeatFn = sprintf('%s%s_%s_db.bin', paths.outPrefix, netID, dbTest.name);  % just to create the files in the out folder
 

@@ -8,9 +8,28 @@
   
 
 error
-    '/home/leo/mega/maqbool-data/precomputed_files/vd16_pitts30k_to_tokyoTM_512_m/--/--ZV_RB3qZLM-oYAE7jl0w/_200912/--ZV_RB3qZLM-oYAE7jl0w__200912_35.650769_139.703204_090_012.mat'
+    'agar compilation center me ruk jay to error a jata hai
+
+post computed files
 
 q_data_test 
+q_data_test_exist 
+
+save(q_feat,'ds_all_file', 'q_bbox', 'db_bbox_file');
+m_estimate_box_feature
+
+
+
+
+**models:**
+maqbool-data/models/ FILE.mat
+*      **precomputed files**
+      /home/leo/mega/maqbool-data/models/pre_computed/vd16_pitts30k_to_tokyoTM_4096_data.mat
+
+**all files**
+
+
+
 
 
 <h1 align="center">

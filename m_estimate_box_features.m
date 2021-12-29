@@ -1,4 +1,4 @@
-function q_feat = m_estimate_box_features(qimg_path, model, db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample)
+function q_feat = m_estimate_box_features(qimg_path,m_config, model, db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample)
 
 im= vl_imreadjpeg({char(qimg_path)},'numThreads', 12); 
 
@@ -25,7 +25,7 @@ for jj = 1:size(ids,1)
 
         ds_all_full = [];
 
-        db_img = strcat(dataset_path, '/',db.dbImageFns{ids(jj,1),1})  ;
+        db_img = strcat(dataset_path,m_config.image_folder, '/',db.dbImageFns{ids(jj,1),1})  ;
         im= vl_imreadjpeg({char(db_img)},'numThreads', 12); 
         I = uint8(im{1,1});
         bbox_all =edgeBoxes(I,model); % ~ -> Edge (not required)

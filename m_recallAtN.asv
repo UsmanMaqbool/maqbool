@@ -24,7 +24,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
     show_output = m_config.show_output;  %test the boxes
     dataset_path = strcat(m_config.datasets_path); 
     save_pre_computed = m_config.save_pre_computed; 
-    save_post_computed = m_config.save_post_computed;
+    save_mdl_pre_computed_files = m_config.save_mdl_pre_computed_files;
     m_limit = m_config.m_limit;
     m_alpha = m_config.m_alpha;
     APs= zeros(db.numQueries, 1);
@@ -62,28 +62,33 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         g_mdl =  load(m_config.save_mdl);
         endlenght = length(toTest);
      else
-        
-         endlenght = 250;
+        endlenght = 250;
+        fprintf( 'Creating model by using the TokyoTM ground truth... \n');
+
      end
     %% Start
     for iTestSample= iTestSample_Start:endlenght
         
-    %Display
+        %Display
         relja_progress(iTestSample, ...
                        length(toTest), ...
                        sprintf('%.4f', mean(printRecalls(1:(iTestSample-1)))), evalProg);
         
-        data_post_computed = strcat(save_post_computed,'/', db.qImageFns{iTestSample, 1});  
-        data_post_computed = strrep(data_post_computed,'.jpg','.mat');
+        if m_config.create_Model
+            %q_data_test = strcat(m_config.save_mdl_pre_computed_files,'/', db.qImageFns{iTestSample, 1});
+        %else  
+            q_data_test = strcat(m_config.save_post_computed,'/', db.qImageFns{iTestSample, 1});
+        end
+        q_data_test = strrep(q_data_test,'.jpg','.mat');
 
-        if exist(data_post_computed, 'file')
-            data_post_computed_exist = true;
-            load(data_post_computed); % load D_diff_predict_50 and D_diff_predict_100
+        if exist(q_data_test, 'file')
+            q_data_test_exist = true;
+            load(q_data_test); % load D_diff_pm_configredict_50 and D_diff_predict_100
 
         else
             %if you dont want to compute, you can download from NETVLAD's project page.
-             % print_level_wsd(m_config.save_m_data_test,3); % Download pre-computed files    
-            data_post_computed_exist = false;
+             % print_level_wsd(m_config.save_pre_computed_files,3); % Download pre-computed files    
+            q_data_test_exist = false;
         end
             iTest= toTest(iTestSample);
             [ids, ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
@@ -94,21 +99,17 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
          
             % if oxford or otherplace datasets, we can get the recall like this
             if(m_config.create_Model)
-                %working for TokyoTM    
+                %for TokyoTM    
                 gt_top = logical(isPos(iTest, ids));
-
-                q_img = strcat(save_pre_computed,'/', db.qImageFns{iTestSample, 1});
-                zip_folder = save_pre_computed;
+                q_img = strcat(save_mdl_pre_computed_files,'/', db.qImageFns{iTestSample, 1});
             else
-
-                q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
-                zip_folder = save_path;
+                q_img = strcat(save_pre_computed,'/', db.qImageFns{iTestSample, 1});  
             end
 
 
             %% Leo START
 
-            qimg_path = strcat(dataset_path,'/',m_config.query_folder,'/',db.qImageFns{iTestSample, 1});  
+            qimg_path = strcat(dataset_path,m_config.query_folder,'/',db.qImageFns{iTestSample, 1});  
 
             if show_output
                 qq_img = imread(qimg_path);
@@ -122,7 +123,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             end
 
 
-        if ~data_post_computed_exist
+        if ~q_data_test_exist
             q_feat = strrep(q_img,'.jpg','.mat');
 
 
@@ -131,8 +132,8 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                  x_q_feat_all(iTestSample) = struct ('x_q_feat', x_q_feat); 
             else
                 %if you dont want to compute, you can download from NETVLAD's project page.
-               %  print_level_wsd(zip_folder,4); % Download pre-computed files    
-                q_feat = m_estimate_box_features(qimg_path,m_config,model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
+                %print_level_wsd(zip_folder,4); % Download pre-com366puted files   
+                q_feat = m_estimate_box_features(qimg_path,m_config, model,db,q_feat,net,num_box,total_top,dataset_path,ids,iTestSample);
                 x_q_feat = load(q_feat);
 
             end
@@ -160,12 +161,13 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             end
             ds_box_all_sum = sum(C_j_nn(:));
         
-        end
+       % end
         
         for i=startfrom:total_top 
  
-          if ~data_post_computed_exist 
+          % if ~q_data_test_exist 
                %Single File Load
+               
                C_j_nn = x_q_feat.ds_all_file(i).ds_all_full; %51*50         first match ka box
                x_q_feat_box_q =  x_q_feat.q_bbox;                       %51*5
                x_q_feat_box_db = x_q_feat.db_bbox_file(i).bboxdb;       % 51*5
@@ -284,7 +286,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
            end
            if ~(m_config.create_Model)
                
-               if ~data_post_computed_exist
+               if ~q_data_test_exist
 
                    M_j = crf_M_j';
                    M_j = reshape(M_j,1,[]);
@@ -308,7 +310,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                m_table = [];
                C_n_n = [];
            else
-                 crf_y = int8(gt_top(i,1))+1;         %  for PARIS
+                 crf_y = int8(gt_top(i,1))+1;    
                  crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_j); 
                  data(:,i+((iTestSample-1)*100)) = crf_data;
            end
@@ -344,11 +346,36 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                    end
                     isPos= ismember(ids_new', db.posIDs{iTestSample});
                     gt_top = isPos';
-
+                   % thisRecall= cumsum(isPos') > 0; % yahan se get karta hai %db.cp (close position)
+                  
+                   %isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
+                   %ids= ids(~isIgnore);
+                   % isPos= ismember(ids', db.posIDs{iQuery});
                    prec= cumsum(isPos)./[1:length(ids_new)];
                    thisRecall= cumsum(isPos)/length(db.posIDs{iTestSample});
                    APs(iTestSample)= diff([0, thisRecall]) * ( [1, prec(1:(end-1))]+prec )' /2;
-
+                   
+%                    isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
+%                    ids_real= ids(~isIgnore);
+%                    % making 100 total
+%                    if size(ids_real,1) < total_top
+%                       differnce_ids =  total_top-size(ids_real,1);
+%                        for ids_i = 1:differnce_ids
+%                            ids_real = [ids_real ;ids_real(ids_i,1)];
+%                           
+%                        end
+%                    end
+%                     isPos= ismember(ids_real', db.posIDs{iTestSample});
+%                     gt_top = isPos';
+%                    % thisRecall= cumsum(isPos') > 0; % yahan se get karta hai %db.cp (close position)
+%                   
+%                    %isIgnore= ismember(ids, db.ignoreIDs{iTestSample});
+%                    %ids= ids(~isIgnore);
+%                    % isPos= ismember(ids', db.posIDs{iQuery});
+%                    prec_real= cumsum(isPos)./[1:length(ids_real)];
+%                    thisRecall_real= cumsum(isPos)/length(db.posIDs{iTestSample});
+%                    APs_real(iTestSample)= diff([0, thisRecall]) * ( [1, prec(1:(end-1))]+prec )' /2;
+                   
                     
                else
                     gt_top = isPos(iTest, ids_new);
@@ -416,14 +443,14 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         if iTestSample == m_limit && m_config.create_Model
             break;
         end
-        if ~data_post_computed_exist && ~m_config.create_Model
+        if ~q_data_test_exist && ~m_config.create_Model
 
             % check folder
-            check_folder = fileparts(data_post_computed);
+            check_folder = fileparts(q_data_test);
             if ~exist(check_folder, 'dir')
                 mkdir(check_folder)
             end
-            save(data_post_computed,'data_test');
+            save(q_data_test,'data_test'); %only for the ground truth
             data_test = [];
         end
     end
@@ -438,7 +465,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
     
     
     if (m_config.create_Model)
-        save(m_config.save_post_computed_mdl,'data');
+        save(m_config.save_mdl_pre_computed,'data');
         res = [];
         fprintf( 'GT data is saved. \n')
     else
