@@ -96,16 +96,10 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             if(m_config.create_Model)
                 %working for TokyoTM    
                 gt_top = logical(isPos(iTest, ids));
-
-                q_img = strcat(save_pre_computed,'/', db.qImageFns{iTestSample, 1});
-                zip_folder = save_pre_computed;
-            else
-
-                q_img = strcat(save_path,'/', db.qImageFns{iTestSample, 1});  
-                zip_folder = save_path;
             end
-
-
+            
+            q_img = strcat(save_pre_computed,'/', db.qImageFns{iTestSample, 1});
+            
             %% Leo START
 
             qimg_path = strcat(dataset_path,'/',m_config.query_folder,'/',db.qImageFns{iTestSample, 1});  

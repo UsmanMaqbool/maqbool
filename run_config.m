@@ -2,14 +2,37 @@ function m_opts= run_config(paths)
     
    
     % Controlling parameters
-    % Select feature dimension
-    f_dimension = 512;   % '512' or '4096'
-      
-    % Select pre-trained model
-    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k'
-   
-    % Test model on
-    test_on = 'tokyo247';  %'pitts30k' , 'tokyo247'
+    %-------------------------------------------------
+    % % Select feature dimension
+    % f_dimension can be '512' or '4096'
+     
+    % % Select pre-trained model
+    % net_dataset can be % tokyoTM' or 'pitts30k'
+    
+    % % Test model on
+    % test_on can be 'pitts30k' or 'tokyo247'
+    %-------------------------------------------------
+    
+    %% To Run select on of these
+    
+    % % Pitts on Tokyo 24/7 at 512-D
+    % net_dataset = 'pitts30k';  test_on = 'tokyo247'; f_dimension = 512; 
+    
+    % % Pitts on Tokyo 24/7 at 4096-D
+    % net_dataset = 'pitts30k'; test_on = 'tokyo247'; f_dimension = 4096; 
+    
+    % % Pitts250k at 512-D 
+    %net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 512; 
+    
+    % % Pitts250k at 4096-D
+    % net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 4096; 
+    
+    % % Tokyo 24/7 at 512-D
+    net_dataset = 'tokyoTM'; test_on = 'tokyo247'; f_dimension = 512;
+    
+    % % Tokyo 24/7 at 4096-D
+    % net_dataset = 'tokyoTM'; test_on = 'tokyo247'; f_dimension = 4096; 
+
     
     %%
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.

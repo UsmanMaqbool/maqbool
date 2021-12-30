@@ -5,18 +5,8 @@
 - projects ki jagah boxes number likh daity hain
 - 50x50 -> 10x10 boxes hoty hain
 - equation verify karni hain
+- check same model wali bat
   
-
-error
-    'agar compilation center me ruk jay to error a jata hai
-
-post computed files
-
-q_data_test 
-q_data_test_exist 
-
-save(q_feat,'ds_all_file', 'q_bbox', 'db_bbox_file');
-m_estimate_box_feature
 
 
 
