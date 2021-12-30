@@ -11,7 +11,7 @@ function m_model(m_config)
         HH = [HH ; data(i).pre data(i).H XX double(data(i).Y)];
     end
     GT = HH(1:25000,:);
-   
+    
     Data = array2table(GT);
     mdls{1} = TreeBagger(50,Data,'GT113','Method','regression','OOBPrediction','On');  
     mdls{2} = TreeBagger(100,Data,'GT113','Method','regression', 'OOBPrediction','On');  

@@ -1,27 +1,3 @@
-- Create Model (compute all files)
-  - precomputed-features
-  - models
-  - 
-- projects ki jagah boxes number likh daity hain
-- 50x50 -> 10x10 boxes hoty hain
-- equation verify karni hain
-- check same model wali bat
-  
-
-
-
-
-**models:**
-maqbool-data/models/ FILE.mat
-*      **precomputed files**
-      /home/leo/mega/maqbool-data/models/pre_computed/vd16_pitts30k_to_tokyoTM_4096_data.mat
-
-**all files**
-
-
-
-
-
 <h1 align="center">
   <p align="center">MAQBOOL</p>
   <a href="https://usmanmaqbool.github.io/why-so-deep"><img src="https://usmanmaqbool.github.io/assets/images/maqbool/maqbool.png" alt="why-so-deep" style="height: 164px;"></a>
