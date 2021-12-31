@@ -48,7 +48,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
     num_box = 50; % Total = 10 (first one is the full images feature / box)
     Top_boxes = 10; % will be used.
     total_top = 100; %100;0
-    data_test = [];
+    P_M_j = [];
     
     
     if show_output
@@ -78,18 +78,18 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
 
         if exist(data_post_computed, 'file')
             data_post_computed_exist = true;
-            load(data_post_computed); % load D_diff_predict_50 and D_diff_predict_100
+            load(data_post_computed); % load P_M_j_50 and P_M_j_100
 
         else
             %if you dont want to compute, you can download from NETVLAD's project page.
-             % print_level_wsd(m_config.save_m_data_test,3); % Download pre-computed files    
+             % print_level_wsd(m_config.save_m_P_M_j,3); % Download pre-computed files    
             data_post_computed_exist = false;
         end
             iTest= toTest(iTestSample);
-            [ids, ds_pre]= searcher(iTest, nTop); % Main function to find top 100 candidaes
+            [ids, d_c]= searcher(iTest, nTop); % Main function to find top 100 candidaes
             
            % [ids, ~]= yael_nn(db.qImageFns, db.qImageFns(:,iTest), size(db.qImageFns, 2));
-            ds = ds_pre - min(ds_pre(:));
+            ds = d_c - min(d_c(:));
 
          
             % if oxford or otherplace datasets, we can get the recall like this
@@ -137,13 +137,13 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
     %%        
             SLEN_top = zeros(total_top,2); 
 
-            exp_ds_pre = exp(-1.*ds_pre);
-            ds_pre_diff = diff(ds_pre);
-            ds_pre_diff = [0 ; ds_pre_diff ];
-            exp_ds_pre_sum = sum(exp_ds_pre);
-            prob_q_db = exp_ds_pre/exp_ds_pre_sum;
+            exp_d_c = exp(-1.*d_c);
+            d_c_diff = diff(d_c);
+            d_c_diff = [0 ; d_c_diff ];
+            exp_d_c_sum = sum(exp_d_c);
+            prob_q_db = exp_d_c/exp_d_c_sum;
             C_j_nn = [];
-            min_ds_pre_all = [];
+            min_d_c_all = [];
 
             % figure;
 
@@ -156,13 +156,13 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         
         end
         
-        for i=startfrom:total_top 
+        for j=startfrom:total_top 
  
           if ~data_post_computed_exist 
                %Single File Load
-               C_j_nn = x_q_feat.ds_all_file(i).ds_all_full; %51*50         first match ka box
+               C_j_nn = x_q_feat.ds_all_file(j).ds_all_full; %51*50         first match ka box
                x_q_feat_box_q =  x_q_feat.q_bbox;                       %51*5
-               x_q_feat_box_db = x_q_feat.db_bbox_file(i).bboxdb;       % 51*5
+               x_q_feat_box_db = x_q_feat.db_bbox_file(j).bboxdb;       % 51*5
 
 
                C_j_nn_exp = exp(-1.*C_j_nn); % jj first match
@@ -176,7 +176,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 diff2_C_j_f = diff2_C_n_n;
 
 
-                C_j_f = C_j_nn-max(ds_pre(:));  % d_c^max
+                C_j_f = C_j_nn-max(d_c(:));  % d_c^max
 
                 s=sign(C_j_f); 
 
@@ -186,9 +186,9 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 C_j_nn = abs(D_j).*C_j_nn; 
 
 
-                D_diff = ds_pre(i,1); 
-                current_diff = ds_pre_diff(i,1); 
-                exp_R = exp(-1.*ds_pre_diff(i,1)); %*exp_c_xy_j;
+                D_diff = d_c(j,1); 
+                current_diff = d_c_diff(j,1); 
+                exp_R = exp(-1.*d_c_diff(j,1)); %*exp_c_xy_j;
 
                [row,col] = size(C_j_nn);    
 
@@ -221,8 +221,8 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                         exp_P_b_c = exp(-1.*(1-db_width_height));
 
 
-                        d_xy_j = ds_pre(1,1)+c_xy_j;
-                        exp_d_xy_j = exp(-1.*d_xy_j); %*exp_c_xy_j;
+                        d_xy_j = d_c(1,1)+c_xy_j;
+                        exp_d_xy_j = exp(-1.*d_xy_j);  
 
                         S_XY(related_Box_q,related_Box_db) = 10*exp_R*exp_d_xy_j*exp_P_b_q*exp_P_b_c;
 
@@ -241,8 +241,8 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                         C_j_nn_sorted(ii,jj) = C_j_nn(ii_index+1,jj);
                    end
                end
-
-               P_j_S_C = S_XY_sorted.*C_j_f_sorted; 
+             
+                P_j_S_C = S_XY_sorted.*C_j_f_sorted; 
 
 
                 S1 = C_j_nn_sorted; 
@@ -265,16 +265,13 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 else
                     min_C_n_n = 0;
                 end
-                P_j_SM = exp_ds_pre(i,1)/exp_ds_pre_sum;
+                P_j_SM = exp_d_c(j,1)/exp_d_c_sum;
                 P_j_SM = exp(-1*min_C_n_n)*P_j_SM;
 
                 m_j_mat = P_j_SM*P_j_SC;
-                mean_min_top = exp(-1.*mean(C_j_nn(1,1:Top_boxes))); 
 
-
-                crf_C_qc = [current_diff C_j_nn(1,1:Top_boxes)];%double(m_C_n_n(1,:));
-                crf_M_j = m_j_mat;%double(m_C_n_n(2:11,:));
-                d_c_j = ds_pre(i,1);
+                crf_C_qc = [current_diff C_j_nn(1,1:Top_boxes)]; 
+                crf_M_j = m_j_mat; 
            end
            if ~(m_config.create_Model)
                
@@ -282,29 +279,29 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
 
                    M_j = crf_M_j';
                    M_j = reshape(M_j,1,[]);
-                   m_pridict = [d_c_j crf_C_qc M_j];
+                   m_pridict = [d_c(j,1) crf_C_qc M_j];
                    
-                   D_diff_predict_50 = predict(g_mdl.mdls{1},m_pridict);
-                   D_diff_predict_100 = predict(g_mdl.mdls{2},m_pridict);
-                   data_test = [data_test; D_diff_predict_50 D_diff_predict_100];
+                   P_M_j_50 = predict(g_mdl.mdls{1},m_pridict);
+                   P_M_j_100 = predict(g_mdl.mdls{2},m_pridict);
+                   P_M_j = [P_M_j; P_M_j_50 P_M_j_100];
  
                else
                
-                D_diff_predict_50 = data_test(i,1);
-                D_diff_predict_100 = data_test(i,2);
+                P_M_j_50 = P_M_j(j,1);
+                P_M_j_100 = P_M_j(j,2);
                end
-               %store ds_pre
-               ds_new_top(i,1) = ds_pre(i,1);
-               ds_new_top(i,2) =  abs(ds_pre(i,1)-m_alpha*log(D_diff_predict_50));   
-               ds_new_top(i,3) =  abs(ds_pre(i,1)-m_alpha*log(D_diff_predict_100));   
+               %store d_c
+               ds_new_top(j,1) = d_c(j,1); 
+               ds_new_top(j,2) =  abs(d_c(j,1)-m_alpha*log(P_M_j_50));   
+               ds_new_top(j,3) =  abs(d_c(j,1)-m_alpha*log(P_M_j_100));   
        
                  
                m_table = [];
                C_n_n = [];
            else
-                 crf_y = int8(gt_top(i,1))+1;         %  for PARIS
-                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_j); 
-                 data(:,i+((iTestSample-1)*100)) = crf_data;
+                 crf_y = int8(gt_top(j,1))+1;         %  for PARIS
+                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_min); 
+                 data(:,j+((iTestSample-1)*100)) = crf_data;
            end
         
         end
@@ -317,7 +314,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 [C c_i] = sortrows(ds_new_top(:,j));
                 ids_new = ids;
                 for i=1:total_top
-                    ids_new(i,1) = ids(c_i(i,1));
+                    ids_new(j,1) = ids(c_i(j,1));
                 end
             
 
@@ -333,7 +330,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                       differnce_ids =  total_top-size(ids_new,1);
                        for ids_i = 1:differnce_ids
                            ids_new = [ids_new ;ids_new(ids_i,1)];
-                           ds_pre = [ds_pre ;ds_pre(ids_i,1)];
+                           d_c = [d_c ;d_c(ids_i,1)];
                        end
                    end
                     isPos= ismember(ids_new', db.posIDs{iTestSample});
@@ -358,17 +355,19 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
 
               printRecalls(iTestSample)= thisRecall(printN);
               display_thumb = [display_thumb ids_new(1:5,1) gt_top(1:5,1)];
+              printRecalls(iTestSample)= thisRecall(printN);
+              display_thumb = [display_thumb ids_new(1:5,1) gt_top(1:5,1)];
               
            end
            
            allrecalls_pslen= recalls_m;
            allrecalls_m= [mean(allrecalls_pslen(:,:,1),1 )' mean(allrecalls_pslen(:,:,2),1 )'];
            
-           if show_output % && display_thumb(1,2) ~= 1 && display_thumb(1,6) == 1
+           if show_output
               
                for j = 1:5
                     %netvlad = imread(netvlat_img(j,1));
-                    netvlad = imread(strcat(dataset_path,'/',m_config.image_folder,'/',db.dbImageFns{display_thumb(j,1),1}));
+                    netvlad = imread(strcat(dataset_path,'images/',db.dbImageFns{display_thumb(j,1),1}));
 
                     if(display_thumb(j,2) == 1)
                         image_n = addborder(netvlad, 10, [0,255,0], 'outer'); 
@@ -383,7 +382,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                     'FontSize',10,...
                     'backgroundcolor','w');
 
-                    maqbool = imread(strcat(dataset_path,'/',m_config.image_folder,'/',db.dbImageFns{display_thumb(j,5),1}));
+                    maqbool = imread(strcat(dataset_path,'images/', db.dbImageFns{display_thumb(j,5),1}));
                     if(display_thumb(j,6) == 1)
                         image_m = addborder(maqbool, 10, [0,255,0], 'outer'); 
                     else
@@ -399,9 +398,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
 
                 end
 
-           
-                disp('Press any key to continue !') 
-                pause;    
+               
            end
            
         else
@@ -410,17 +407,9 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         if iTestSample == m_limit && m_config.create_Model
             break;
         end
-        if ~data_post_computed_exist && ~m_config.create_Model
-
-            % check folder
-            check_folder = fileparts(data_post_computed);
-            if ~exist(check_folder, 'dir')
-                mkdir(check_folder)
-            end
-            save(data_post_computed,'data_test');
-            data_test = [];
-        end
     end
+    
+    
     
     t= toc(evalProg);
 

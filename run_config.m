@@ -28,10 +28,10 @@ function m_opts= run_config(paths)
     %net_dataset = 'tokyoTM'; test_on = 'tokyo247'; f_dimension = 4096; 
     
     % % Pitts250k at 512-D 
-    net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 512; 
+    % net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 512; 
     
     % % Pitts250k at 4096-D
-    % net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 4096; 
+    net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 4096; 
     
     
 
@@ -42,11 +42,12 @@ function m_opts= run_config(paths)
     show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
     proj = 50; 
     
-    if f_dimension == 4096
-        m_alpha = 0.31;
+  if f_dimension == 4096
+        m_alpha = 0.30;
     else
-        m_alpha = 1.15;
+        m_alpha = 1;
     end
+
     % Network
     pre_net = 'vd16';
     job_net = strcat(pre_net,'_',net_dataset);
