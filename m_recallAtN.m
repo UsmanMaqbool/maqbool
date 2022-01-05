@@ -88,11 +88,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             iTest= toTest(iTestSample);
             [ids, d_c]= searcher(iTest, nTop); % Main function to find top 100 candidaes
             
-           % [ids, ~]= yael_nn(db.qImageFns, db.qImageFns(:,iTest), size(db.qImageFns, 2));
-            ds = d_c - min(d_c(:));
-
-         
-            % if oxford or otherplace datasets, we can get the recall like this
+        
             if(m_config.create_Model)
                 %working for TokyoTM    
                 gt_top = logical(isPos(iTest, ids));
@@ -300,7 +296,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                C_n_n = [];
            else
                  crf_y = int8(gt_top(j,1))+1;         %  for PARIS
-                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_min); 
+                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c); 
                  data(:,j+((iTestSample-1)*100)) = crf_data;
            end
         
@@ -309,9 +305,9 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         display_thumb = [];
         if ~(m_config.create_Model)
             
-           for j = 1:size(ds_new_top,2)
+           for k = 1:size(ds_new_top,2)
     
-                [C c_i] = sortrows(ds_new_top(:,j));
+                [C c_i] = sortrows(ds_new_top(:,k));
                 ids_new = ids;
                 for i=1:total_top
                     ids_new(j,1) = ids(c_i(j,1));
@@ -322,35 +318,12 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                assert(numReturned<=nTop); % if your searcher returns fewer, it's your fault
                
 %               gt_top = logical(isPos(iTest, ids_new));
-               if(strcmp(m_config.test_on,'oxford') || strcmp(m_config.test_on,'holidays') || strcmp(m_config.test_on,'paris'))
-                   isIgnore= ismember(ids_new, db.ignoreIDs{iTestSample});
-                   ids_new= ids_new(~isIgnore);
-                   % making 100 total
-                   if size(ids_new,1) < total_top
-                      differnce_ids =  total_top-size(ids_new,1);
-                       for ids_i = 1:differnce_ids
-                           ids_new = [ids_new ;ids_new(ids_i,1)];
-                           d_c = [d_c ;d_c(ids_i,1)];
-                       end
-                   end
-                    isPos= ismember(ids_new', db.posIDs{iTestSample});
-                    gt_top = isPos';
-
-                   prec= cumsum(isPos)./[1:length(ids_new)];
-                   thisRecall= cumsum(isPos)/length(db.posIDs{iTestSample});
-                   APs(iTestSample)= diff([0, thisRecall]) * ( [1, prec(1:(end-1))]+prec )' /2;
-
-                    
-               else
-                    gt_top = isPos(iTest, ids_new);
-                    thisRecall= cumsum( isPos(iTest, ids_new) ) > 0; % yahan se get karta hai %db.cp (close position)    
-               end
+                    thisRecall= cumsum( isPos(iTest, ids_new) ) > 0; % yahan se get karta hai %db.cp (close position)                
                
-               
-               if j == 1
+               if k == 1
                     recalls(iTestSample, :)= thisRecall( min(ns, numReturned) );
                else
-                    recalls_m(iTestSample,:, j-1)= thisRecall( min(ns, numReturned) );
+                    recalls_m(iTestSample,:, k-1)= thisRecall( min(ns, numReturned) );
                end
 
               printRecalls(iTestSample)= thisRecall(printN);
@@ -365,33 +338,33 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
            
            if show_output
               
-               for j = 1:5
-                    %netvlad = imread(netvlat_img(j,1));
-                    netvlad = imread(strcat(dataset_path,'images/',db.dbImageFns{display_thumb(j,1),1}));
+               for k = 1:5
+                    %netvlad = imread(netvlat_img(k,1));
+                    netvlad = imread(strcat(dataset_path,'images/',db.dbImageFns{display_thumb(k,1),1}));
 
-                    if(display_thumb(j,2) == 1)
+                    if(display_thumb(k,2) == 1)
                         image_n = addborder(netvlad, 10, [0,255,0], 'outer'); 
                     else
                         image_n = addborder(netvlad, 10, [255,0,0], 'outer'); 
                     end
-                    subplot_tight(2, 7, j+2, p_margin);
+                    subplot_tight(2, 7, k+2, p_margin);
                     imshow(image_n);
 
-                    ntitle(['NetVLAD Recall @ ',num2str(j)],...
+                    ntitle(['NetVLAD Recall @ ',num2str(k)],...
                     'location','south',...
                     'FontSize',10,...
                     'backgroundcolor','w');
 
-                    maqbool = imread(strcat(dataset_path,'images/', db.dbImageFns{display_thumb(j,5),1}));
-                    if(display_thumb(j,6) == 1)
+                    maqbool = imread(strcat(dataset_path,'images/', db.dbImageFns{display_thumb(k,5),1}));
+                    if(display_thumb(k,6) == 1)
                         image_m = addborder(maqbool, 10, [0,255,0], 'outer'); 
                     else
                         image_m = addborder(maqbool, 10, [255,0,0], 'outer'); 
                     end
-                    subplot_tight(2, 7, j+9, p_margin);
+                    subplot_tight(2, 7, k+9, p_margin);
                     imshow(image_m);
 
-                    ntitle(['MAQBOOL Recall @ ',num2str(j)],...
+                    ntitle(['MAQBOOL Recall @ ',num2str(k)],...
                     'location','south',...
                     'FontSize',10,...
                     'backgroundcolor','w');

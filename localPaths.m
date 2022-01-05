@@ -7,7 +7,7 @@ function paths= localPaths()
     
     % Give Path
     datasets_directory = '/mnt/ssd/usman_ws/datasets/maqbool-datasets/datasets-place-recognition/';    
-    paths.m_directory = '/home/leo/mega/maqbool-data/'; % Save MAQBOOL files
+    paths.m_directory = '/mnt/ssd/usman_ws/maqbool-data-ral-beta/'; % Save MAQBOOL files
 
     % --- dependencies
     
