@@ -112,7 +112,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             end
 
 
-        if ~data_post_computed_exist
+       % if ~data_post_computed_exist
             q_feat = strrep(q_img,'.jpg','.mat');
 
 
@@ -128,120 +128,112 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
             end
 
             total_top = size(ids,1); %100;0
-
-
-    %%        
-            SLEN_top = zeros(total_top,2); 
-
             exp_d_c = exp(-1.*d_c);
             d_c_diff = diff(d_c);
-            d_c_diff = [0 ; d_c_diff ];
+            d_c_diff = [0 ; d_c_diff ]; % padding
             exp_d_c_sum = sum(exp_d_c);
             prob_q_db = exp_d_c/exp_d_c_sum;
-            C_j_nn = [];
+            C_n_n_j = [];
             min_d_c_all = [];
-
+    
             % figure;
-
-            for i=startfrom:total_top   
-                x_q_feat_ds= x_q_feat.ds_all_file(i).ds_all_full; % 51x50
-                C_j_nn = [C_j_nn ;x_q_feat_ds];  % 5100 x 50
-
+                
+            for j=startfrom:total_top   
+                x_q_feat_ds= x_q_feat.ds_all_file(j).ds_all_full; % 51x50
+                C_n_n_j = [C_n_n_j ;x_q_feat_ds];  % 5100 x 50
+    
             end
-            ds_box_all_sum = sum(C_j_nn(:));
+          %  ds_box_all_sum = sum(C_n_n_j(:));
+            
         
-        end
-        
-        for j=startfrom:total_top 
- 
-          if ~data_post_computed_exist 
+            
+            for j=startfrom:total_top 
+     
+                
                %Single File Load
-               C_j_nn = x_q_feat.ds_all_file(j).ds_all_full; %51*50         first match ka box
+               C_n_n_j = x_q_feat.ds_all_file(j).ds_all_full; %51*51         first match ka box
                x_q_feat_box_q =  x_q_feat.q_bbox;                       %51*5
                x_q_feat_box_db = x_q_feat.db_bbox_file(j).bboxdb;       % 51*5
-
-
-               C_j_nn_exp = exp(-1.*C_j_nn); % jj first match
-
+    
+               
+               
+               %% EQN 2
                % excluding the top
-
-               C_n_n = C_j_nn(2:end,:);  
-               [C_n_n_sort C_n_n_sort_index] = sort(C_n_n);
-
-                diff2_C_n_n = diff(diff(C_n_n));
-                diff2_C_j_f = diff2_C_n_n;
-
-
-                C_j_f = C_j_nn-max(d_c(:));  % d_c^max
-
-                s=sign(C_j_f); 
-
-                inegatif=sum(s(:)==-1);
-
-                D_j = s; D_j(D_j>0) = 0; 
-                C_j_nn = abs(D_j).*C_j_nn; 
-
-
-                D_diff = d_c(j,1); 
-                current_diff = d_c_diff(j,1); 
-                exp_R = exp(-1.*d_c_diff(j,1)); %*exp_c_xy_j;
-
-               [row,col] = size(C_j_nn);    
-
-               box_var_db = [];
-
-               for iii = 1: col
-                    for jjj = 1:row 
-
+               
+               ds_all = C_n_n_j(2:end,:);  
+               [ds_all_sort ds_all_sort_index] = sort(ds_all);
+              
+               % diff2_ds_all = diff(diff(ds_all));
+               % diff2_C_f_j = diff2_ds_all;
+    
+                
+                C_f_j = C_n_n_j-max(d_c(:));
+    
+                D_j=sign(C_f_j); 
+                D_j(D_j>0) = 0; 
+                
+                C_n_n_j_f = abs(D_j).*C_n_n_j; 
+             
+                
+                d_c_j = d_c(j,1); 
+                R_j_prime = d_c_diff(j,1); 
+                
+                exp_relative_diff = exp(-1.*R_j_prime); %*exp_related_Box_dis;
+                               
+               [row,col] = size(C_n_n_j);    
+                
+                
+               for y_box_db = 1: col
+                    for x_box_db = 1:row 
+    
                         %Query -> Row and DB -> DB1 DB2 DB3 DB4 DB5 DB6 DB7
                         %DB8
                         %
-
-
-                        c_xy_j = C_j_nn(jjj,iii);   % 51X51
-
-
-                        related_Box_db = iii;
-                        related_Box_q = jjj;
-
-                        bb_q = x_q_feat_box_q(related_Box_q,1:4);
-                        bb_db = x_q_feat_box_db(related_Box_db,1:4); % Fix sized, so es ko 50 waly ki zarorat nai hai                      
-
+    
+    
+                        related_Box_dis = C_n_n_j(x_box_db,y_box_db);   % 51X51
+                      
+    
+                        bb_q = x_q_feat_box_q(x_box_db,1:4);
+                        bb_db = x_q_feat_box_db(y_box_db,1:4); % Fix sized, so es ko 50 waly ki zarorat nai hai                      
+    
                         q_size = x_q_feat_box_q(1,3)*(x_q_feat_box_q(1,4));  % wrong size, 3 se multiply howa howa hai
                         db_size = x_q_feat_box_db(1,3)*(x_q_feat_box_db(1,4));
-
+    
                         q_width_height = (bb_q(1,3)*bb_q(1,4))/(q_size);
                         db_width_height = (bb_db(1,3)*bb_db(1,4))/(db_size);
-
-                        exp_P_b_q = exp(-1.*(1-q_width_height));
-                        exp_P_b_c = exp(-1.*(1-db_width_height));
-
-
-                        d_xy_j = d_c(1,1)+c_xy_j;
-                        exp_d_xy_j = exp(-1.*d_xy_j);  
-
-                        S_XY(related_Box_q,related_Box_db) = 10*exp_R*exp_d_xy_j*exp_P_b_q*exp_P_b_c;
-
+    
+                        exp_q_width_height = exp(-1.*(1-q_width_height));
+                        exp_c_width_height = exp(-1.*(1-db_width_height));
+    
+    
+                        sum_distance = d_c_j+related_Box_dis;
+                        exp_sum_distance = exp(-1.*sum_distance); %*exp_related_Box_dis;
+                        
+                        betta = 10;
+                        
+                        S_x_y_j(x_box_db,y_box_db) = betta*exp_q_width_height*exp_c_width_height*exp_sum_distance*exp_relative_diff;
+    
                     end
                end
-
-
-               S_XY_sorted = zeros(num_box,num_box);
-               C_j_nn_Nr_sorted = zeros(num_box,num_box);
-
+                    
+             
+               S_x_y_j_sorted = zeros(num_box,num_box);
+               C_n_n_j_Nr_sorted = zeros(num_box,num_box);
+     
                for jj = 1: num_box
                    for ii = 1 : num_box
-                        ii_index = C_n_n_sort_index(ii,jj);
-                        S_XY_sorted(ii,jj) = S_XY(ii_index+1,jj); %51*51
-                        C_j_f_sorted(ii,jj) = C_j_f(ii_index+1,jj);
-                        C_j_nn_sorted(ii,jj) = C_j_nn(ii_index+1,jj);
+                        ii_index = ds_all_sort_index(ii,jj);
+                        S_x_y_j_sorted(ii,jj) = S_x_y_j(ii_index+1,jj); %51*51
+                        C_f_j_sorted(ii,jj) = C_f_j(ii_index+1,jj);
+                        C_n_n_j_f_sorted(ii,jj) = C_n_n_j_f(ii_index+1,jj);
                    end
                end
-             
-                P_j_S_C = S_XY_sorted.*C_j_f_sorted; 
-
-
-                S1 = C_j_nn_sorted; 
+               
+               P_SC_j = S_x_y_j_sorted.*C_f_j_sorted; 
+                                
+    
+                S1 = C_n_n_j_f_sorted; 
                 S1_mean = sum(S1(:))/nnz(S1);
                 S1(S1>S1_mean) = 0;
                 S2 = S1; 
@@ -250,58 +242,53 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 S3 = S2; 
                 S3_mean = sum(S3(:))/nnz(S3);
                 S3(S3>S3_mean) = 0;
-
-
+                
+                
                 S1_logical = logical(S1);
-                P_j_SC = P_j_S_C(1:Top_boxes,1:Top_boxes);
-
-                min_C_n_n = C_j_nn_sorted(1:Top_boxes,1:Top_boxes);
-                if (nnz(min_C_n_n) > 0)
-                    min_C_n_n = min(min_C_n_n(min_C_n_n > 0));
+    %             P_SC_j_s1 = S1_logical.*P_SC_j;
+                P_SC_j_sub = P_SC_j(1:Top_boxes,1:Top_boxes);
+                
+                c_min_j = C_n_n_j_f_sorted(1:Top_boxes,1:Top_boxes);
+                if (nnz(c_min_j) > 0)
+                    c_min_j = min(c_min_j(c_min_j > 0));
                 else
-                    min_C_n_n = 0;
+                    c_min_j = 0;
                 end
-                P_j_SM = exp_d_c(j,1)/exp_d_c_sum;
-                P_j_SM = exp(-1*min_C_n_n)*P_j_SM;
-
-                m_j_mat = P_j_SM*P_j_SC;
-
-                crf_C_qc = [current_diff C_j_nn(1,1:Top_boxes)]; 
-                crf_M_j = m_j_mat; 
-           end
-           if ~(m_config.create_Model)
-               
-               if ~data_post_computed_exist
-
-                   M_j = crf_M_j';
-                   M_j = reshape(M_j,1,[]);
-                   m_pridict = [d_c(j,1) crf_C_qc M_j];
+                P_SM_j = exp_d_c(j,1)/exp_d_c_sum;
+                P_SM_j = exp(-1*c_min_j)*P_SM_j;
+    
+                M_j = P_SM_j*P_SC_j_sub;
+                
+                
+                mean_min_top = exp(-1.*mean(C_n_n_j(1,1:10))); 
+             
+                crf_h = [R_j_prime C_n_n_j(1,1:10)];%double(m_ds_all(1,:));
+    
+                 if ~(m_config.create_Model)
+                     M_j_t = M_j';
+                     M_j_t = reshape(M_j_t,1,[]);
+                     m_pridict = [d_c_j crf_h M_j_t];
+    
+                    %store d_c
+                    
+                  ds_new_top(j,1) = d_c_j;
+                    
+                  P_M_j = predict(g_mdl.mdls{1},m_pridict);
+                  ds_new_top(j,2) =  abs(d_c_j-m_alpha*log(P_M_j));   
                    
-                   P_M_j_50 = predict(g_mdl.mdls{1},m_pridict);
-                   P_M_j_100 = predict(g_mdl.mdls{2},m_pridict);
-                   P_M_j = [P_M_j; P_M_j_50 P_M_j_100];
- 
-               else
-               
-                P_M_j_50 = P_M_j(j,1);
-                P_M_j_100 = P_M_j(j,2);
-               end
-               %store d_c
-               ds_new_top(j,1) = d_c(j,1); 
-               ds_new_top(j,2) =  abs(d_c(j,1)-m_alpha*log(P_M_j_50));   
-               ds_new_top(j,3) =  abs(d_c(j,1)-m_alpha*log(P_M_j_100));   
-       
-                 
-               m_table = [];
-               C_n_n = [];
-           else
-                 crf_y = int8(gt_top(j,1))+1;         %  for PARIS
-                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c); 
-                 data(:,j+((iTestSample-1)*100)) = crf_data;
-           end
-        
-        end
-   
+                  P_M_j = predict(g_mdl.mdls{2},m_pridict);
+                  ds_new_top(j,3) =  abs(d_c_j-m_alpha*log(P_M_j));   
+           
+                            
+                  m_table = [];
+                  ds_all = [];
+                 else
+                     crf_y = int8(gt_top(j,1))+1;         %  for PARIS
+                     crf_data = struct ('Y', crf_y,'H', crf_h,'X', M_j, 'pre', d_c_j); 
+                     data(:,j+((iTestSample-1)*100)) = crf_data;
+                 end
+            
+            end
         display_thumb = [];
         if ~(m_config.create_Model)
             
@@ -310,14 +297,14 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 [C c_i] = sortrows(ds_new_top(:,k));
                 ids_new = ids;
                 for i=1:total_top
-                    ids_new(j,1) = ids(c_i(j,1));
+                    ids_new(i,1) = ids(c_i(i,1));
                 end
             
 
                numReturned= length(ids);
                assert(numReturned<=nTop); % if your searcher returns fewer, it's your fault
                
-%               gt_top = logical(isPos(iTest, ids_new));
+               gt_top = logical(isPos(iTest, ids_new));
                     thisRecall= cumsum( isPos(iTest, ids_new) ) > 0; % yahan se get karta hai %db.cp (close position)                
                
                if k == 1
