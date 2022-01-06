@@ -3,7 +3,7 @@ function m_opts= config_wsd(paths)
     % Controlling parameters
 
     % Select feature dimension
-    f_dimension = 512;   % '512' or '4096'
+    f_dimension = 4096;   % '512' or '4096'
     
     pre_net = 'vd16';
     
@@ -24,7 +24,7 @@ function m_opts= config_wsd(paths)
     show_output = 0;      % To show the output thumbnails (it requires adding breakpoints on line 430 of m_recallAtN.m file
     proj = 'm'; 
     
-    if f_dimension == 4096
+    if f_dimension == 512
         m_alpha = 0.31;
     else
         m_alpha = 1.15;
