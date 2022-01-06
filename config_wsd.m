@@ -8,11 +8,11 @@ function m_opts= config_wsd(paths)
     pre_net = 'vd16';
     
     % Select pre-trained model
-    net_dataset = 'pitts30k'; % tokyoTM', 'pitts30k'
+    net_dataset = 'tokyoTM'; % tokyoTM', 'pitts30k'
     job_net = strcat(pre_net,'_',net_dataset);
     
     % Test model on
-    test_on = 'paris';  %'pitts30k' , 'tokyo247' , 'oxford', 'paris'
+    test_on = 'tokyo247';  %'tokyo247' , 'tokyo247' , 'oxford', 'paris'
     
     m_on = 'tokyoTM'; % MAQBOOL DT Model created using TokyoTM test dataset.
     
