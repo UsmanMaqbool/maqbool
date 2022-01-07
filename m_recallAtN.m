@@ -186,7 +186,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 C_j_nn = abs(D_j).*C_j_nn; 
 
 
-                D_diff = d_c(j,1); 
+                d_c_j = d_c(j,1); 
                 current_diff = d_c_diff(j,1); 
                 exp_R = exp(-1.*d_c_diff(j,1)); %*exp_c_xy_j;
 
@@ -268,10 +268,9 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 P_j_SM = exp_d_c(j,1)/exp_d_c_sum;
                 P_j_SM = exp(-1*min_C_n_n)*P_j_SM;
 
-                m_j_mat = P_j_SM*P_j_SC;
+                crf_M_j = P_j_SM*P_j_SC;
 
                 crf_C_qc = [current_diff C_j_nn(1,1:Top_boxes)]; 
-                crf_M_j = m_j_mat; 
            end
            if ~(m_config.create_Model)
                
@@ -279,7 +278,7 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
 
                    M_j = crf_M_j';
                    M_j = reshape(M_j,1,[]);
-                   m_pridict = [d_c(j,1) crf_C_qc M_j];
+                   m_pridict = [d_c_j crf_C_qc M_j];
                    
                    P_M_j_50 = predict(g_mdl.mdls{1},m_pridict);
                    P_M_j_100 = predict(g_mdl.mdls{2},m_pridict);
@@ -291,16 +290,16 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                 P_M_j_100 = P_M_j(j,2);
                end
                %store d_c
-               ds_new_top(j,1) = d_c(j,1); 
-               ds_new_top(j,2) =  abs(d_c(j,1)-m_alpha*log(P_M_j_50));   
-               ds_new_top(j,3) =  abs(d_c(j,1)-m_alpha*log(P_M_j_100));   
+               ds_new_top(j,1) = d_c_j; 
+               ds_new_top(j,2) =  abs(d_c_j-m_alpha*log(P_M_j_50));   
+               ds_new_top(j,3) =  abs(d_c_j-m_alpha*log(P_M_j_100));   
        
                  
                m_table = [];
                C_n_n = [];
            else
-                 crf_y = int8(gt_top(j,1))+1;         %  for PARIS
-                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_min); 
+                 crf_y = int8(gt_top(j,1))+1;    
+                 crf_data = struct ('Y', crf_y,'H', crf_C_qc,'X', crf_M_j, 'pre', d_c_j); 
                  data(:,j+((iTestSample-1)*100)) = crf_data;
            end
         
@@ -309,9 +308,9 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         display_thumb = [];
         if ~(m_config.create_Model)
             
-           for j = 1:size(ds_new_top,2)
+           for k = 1:size(ds_new_top,2)
     
-                [C c_i] = sortrows(ds_new_top(:,j));
+                [C c_i] = sortrows(ds_new_top(:,k));
                 ids_new = ids;
                 for i=1:total_top
                     ids_new(j,1) = ids(c_i(j,1));
@@ -321,36 +320,35 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
                numReturned= length(ids);
                assert(numReturned<=nTop); % if your searcher returns fewer, it's your fault
                
-%               gt_top = logical(isPos(iTest, ids_new));
-               if(strcmp(m_config.test_on,'oxford') || strcmp(m_config.test_on,'holidays') || strcmp(m_config.test_on,'paris'))
-                   isIgnore= ismember(ids_new, db.ignoreIDs{iTestSample});
-                   ids_new= ids_new(~isIgnore);
-                   % making 100 total
-                   if size(ids_new,1) < total_top
-                      differnce_ids =  total_top-size(ids_new,1);
-                       for ids_i = 1:differnce_ids
-                           ids_new = [ids_new ;ids_new(ids_i,1)];
-                           d_c = [d_c ;d_c(ids_i,1)];
-                       end
-                   end
-                    isPos= ismember(ids_new', db.posIDs{iTestSample});
-                    gt_top = isPos';
+% %               gt_top = logical(isPos(iTest, ids_new));
+%                if(strcmp(m_config.test_on,'oxford') || strcmp(m_config.test_on,'holidays') || strcmp(m_config.test_on,'paris'))
+%                    isIgnore= ismember(ids_new, db.ignoreIDs{iTestSample});
+%                    ids_new= ids_new(~isIgnore);
+%                    % making 100 total
+%                    if size(ids_new,1) < total_top
+%                       differnce_ids =  total_top-size(ids_new,1);
+%                        for ids_i = 1:differnce_ids
+%                            ids_new = [ids_new ;ids_new(ids_i,1)];
+%                            d_c = [d_c ;d_c(ids_i,1)];
+%                        end
+%                    end
+%                     isPos= ismember(ids_new', db.posIDs{iTestSample});
+%                     gt_top = isPos';
 
-                   prec= cumsum(isPos)./[1:length(ids_new)];
-                   thisRecall= cumsum(isPos)/length(db.posIDs{iTestSample});
-                   APs(iTestSample)= diff([0, thisRecall]) * ( [1, prec(1:(end-1))]+prec )' /2;
-
-                    
-               else
-                    gt_top = isPos(iTest, ids_new);
+%                    prec= cumsum(isPos)./[1:length(ids_new)];
+%                    thisRecall= cumsum(isPos)/length(db.posIDs{iTestSample});
+%                    APs(iTestSample)= diff([0, thisRecall]) * ( [1, prec(1:(end-1))]+prec )' /2;
+                   
+%                else
+                    gt_top = logical(isPos(iTest, ids_new));;
                     thisRecall= cumsum( isPos(iTest, ids_new) ) > 0; % yahan se get karta hai %db.cp (close position)    
-               end
+    
                
                
-               if j == 1
+               if k == 1
                     recalls(iTestSample, :)= thisRecall( min(ns, numReturned) );
                else
-                    recalls_m(iTestSample,:, j-1)= thisRecall( min(ns, numReturned) );
+                    recalls_m(iTestSample,:, k-1)= thisRecall( min(ns, numReturned) );
                end
 
               printRecalls(iTestSample)= thisRecall(printN);
@@ -363,41 +361,43 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
            allrecalls_pslen= recalls_m;
            allrecalls_m= [mean(allrecalls_pslen(:,:,1),1 )' mean(allrecalls_pslen(:,:,2),1 )'];
            
-           if show_output
+           if show_output % && display_thumb(1,2) ~= 1 && display_thumb(1,6) == 1
               
-               for j = 1:5
-                    %netvlad = imread(netvlat_img(j,1));
-                    netvlad = imread(strcat(dataset_path,'images/',db.dbImageFns{display_thumb(j,1),1}));
+               for k = 1:5
+                    %netvlad = imread(netvlat_img(k,1));
+                    netvlad = imread(strcat(dataset_path,'images/',db.dbImageFns{display_thumb(k,1),1}));
 
-                    if(display_thumb(j,2) == 1)
+                    if(display_thumb(k,2) == 1)
                         image_n = addborder(netvlad, 10, [0,255,0], 'outer'); 
                     else
                         image_n = addborder(netvlad, 10, [255,0,0], 'outer'); 
                     end
-                    subplot_tight(2, 7, j+2, p_margin);
+                    subplot_tight(2, 7, k+2, p_margin);
                     imshow(image_n);
 
-                    ntitle(['NetVLAD Recall @ ',num2str(j)],...
+                    ntitle(['NetVLAD Recall @ ',num2str(k)],...
                     'location','south',...
                     'FontSize',10,...
                     'backgroundcolor','w');
 
-                    maqbool = imread(strcat(dataset_path,'images/', db.dbImageFns{display_thumb(j,5),1}));
-                    if(display_thumb(j,6) == 1)
+                    maqbool = imread(strcat(dataset_path,'images/', db.dbImageFns{display_thumb(k,5),1}));
+                    if(display_thumb(k,6) == 1)
                         image_m = addborder(maqbool, 10, [0,255,0], 'outer'); 
                     else
                         image_m = addborder(maqbool, 10, [255,0,0], 'outer'); 
                     end
-                    subplot_tight(2, 7, j+9, p_margin);
+                    subplot_tight(2, 7, k+9, p_margin);
                     imshow(image_m);
 
-                    ntitle(['MAQBOOL Recall @ ',num2str(j)],...
+                    ntitle(['MAQBOOL Recall @ ',num2str(k)],...
                     'location','south',...
                     'FontSize',10,...
                     'backgroundcolor','w');
 
                 end
-
+                
+                disp('Press any key to continue !') 
+                pause;  
                
            end
            
@@ -406,6 +406,16 @@ function [res, recalls, allrecalls_m]= m_recallAtN(searcher, nQueries, isPos, ns
         end
         if iTestSample == m_limit && m_config.create_Model
             break;
+        end
+        if ~data_post_computed_exist
+
+            % check folder
+            check_folder = fileparts(data_post_computed);
+            if ~exist(check_folder, 'dir')
+                mkdir(check_folder)
+            end
+            save(data_post_computed,'P_M_j');
+            P_M_j = [];
         end
     end
     

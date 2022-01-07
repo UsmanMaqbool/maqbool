@@ -15,23 +15,23 @@ function m_opts= run_config(paths)
     
     %% To Run select on of these
     
+    % % Tokyo 24/7 at 512-D
+    net_dataset = 'tokyoTM'; test_on = 'tokyo247'; f_dimension = 512;
+
+    % % Tokyo 24/7 at 4096-D
+    %net_dataset = 'tokyoTM'; test_on = 'tokyo247'; f_dimension = 4096; 
+
     % % Pitts on Tokyo 24/7 at 512-D
-   % net_dataset = 'pitts30k';  test_on = 'tokyo247'; f_dimension = 512; 
+    % net_dataset = 'pitts30k';  test_on = 'tokyo247'; f_dimension = 512; 
     
     % % Pitts on Tokyo 24/7 at 4096-D
     %net_dataset = 'pitts30k'; test_on = 'tokyo247'; f_dimension = 4096; 
-    
-    % % Tokyo 24/7 at 512-D
-    %net_dataset = 'tokyoTM'; test_on = 'tokyo247'; f_dimension = 512;
-    
-    % % Tokyo 24/7 at 4096-D
-    %net_dataset = 'tokyoTM'; test_on = 'tokyo247'; f_dimension = 4096; 
     
     % % Pitts250k at 512-D 
     % net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 512; 
     
     % % Pitts250k at 4096-D
-    net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 4096; 
+    %net_dataset = 'pitts30k'; test_on = 'pitts30k'; f_dimension = 4096; 
     
     
 
@@ -43,9 +43,9 @@ function m_opts= run_config(paths)
     proj = 50; 
     
   if f_dimension == 4096
-        m_alpha = 0.30;
+        m_alpha = 0.31;
     else
-        m_alpha = 1;
+        m_alpha = 1.15;
     end
 
     % Network
